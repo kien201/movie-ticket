@@ -1,0 +1,61 @@
+package com.movieticket.app.api.admin;
+
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.movieticket.app.constants.RoleName;
+import com.movieticket.app.dto.MovieDTO;
+import com.movieticket.app.dto.Paging;
+import com.movieticket.app.dto.ResultWithPaging;
+import com.movieticket.app.entity.MovieEntity;
+import com.movieticket.app.service.MovieService;
+
+@RestController(value = "adminMovie")
+@RequestMapping(value = "admin/movie")
+public class MovieAPI {
+	@Autowired MovieService movieService;
+	
+	@GetMapping
+	ResultWithPaging<MovieEntity> getAll(@RequestParam(defaultValue = "page") String type, Paging paging) {
+		return movieService.findAll(type, paging);
+	}
+	
+	@GetMapping("{id}")
+	MovieEntity getOne(@PathVariable Long id) {
+		return movieService.findOne(id);
+	}
+
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@ResponseStatus(HttpStatus.CREATED)
+	@PreAuthorize("hasAuthority('"+RoleName.MANAGE_MOVIE+"')")
+	MovieEntity create(@ModelAttribute MovieDTO movieInfo) throws IllegalStateException, IOException {
+		return movieService.create(movieInfo);
+	}
+	
+	@PutMapping(value = "{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PreAuthorize("hasAuthority('"+RoleName.MANAGE_MOVIE+"')")
+	MovieEntity update(@PathVariable Long id, @ModelAttribute MovieDTO movieInfo) throws IllegalStateException, IOException {
+		return movieService.update(id, movieInfo);
+	}
+	
+	@DeleteMapping
+	@PreAuthorize("hasAuthority('"+RoleName.MANAGE_MOVIE+"')")
+	int delete(@RequestBody Long[] ids) {
+		return movieService.delete(ids);
+	}
+}
