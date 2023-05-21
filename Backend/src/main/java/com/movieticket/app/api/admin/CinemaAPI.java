@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.movieticket.app.constants.RoleName;
 import com.movieticket.app.dto.CinemaDTO;
 import com.movieticket.app.entity.CinemaEntity;
-import com.movieticket.app.service.CinemaService;
+import com.movieticket.app.service.ICinemaService;
 
-@RestController
+@RestController(value = "adminCinema")
 @RequestMapping(value = "admin/cinema")
 public class CinemaAPI {
-	@Autowired CinemaService cinemaService;
+	@Autowired ICinemaService cinemaService;
 	
 	@GetMapping
 	List<CinemaEntity> getAll() {

@@ -1,9 +1,9 @@
 import { privateAPI } from './axiosConfig'
 
 const user = {
-    url: '/api/admin/user',
+    url: '/admin/user',
     getAll(params) {
-        return privateAPI.get(this.url, { params })
+        return privateAPI.get(`${this.url}/page`, { params })
     },
     create(data) {
         return privateAPI.post(this.url, data)
@@ -21,20 +21,27 @@ const user = {
 
 const role = {
     getAll() {
-        return privateAPI.get('/api/admin/role')
+        return privateAPI.get('/admin/role')
     },
 }
 
 const movie = {
-    url: '/api/admin/movie',
-    getAll(params) {
-        return privateAPI.get(this.url, { params })
+    url: '/admin/movie',
+    getAll() {
+        return privateAPI.get(this.url)
+    },
+    getAllWithPage(params) {
+        return privateAPI.get(`${this.url}/page`, { params })
     },
     create(data) {
-        return privateAPI.post(this.url, data, { headers: { 'Content-Type': 'multipart/form-data' } })
+        return privateAPI.post(this.url, data, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
     },
     update(id, data) {
-        return privateAPI.put(`${this.url}/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } })
+        return privateAPI.put(`${this.url}/${id}`, data, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
     },
     delete(data) {
         return privateAPI.delete(this.url, { data })
@@ -42,21 +49,114 @@ const movie = {
 }
 
 const food = {
-    url: '/api/admin/food',
-    getAll(params) {
-        return privateAPI.get(this.url, { params })
+    url: '/admin/food',
+    getAll() {
+        return privateAPI.get(this.url)
+    },
+    getAllWithPage(params) {
+        return privateAPI.get(`${this.url}/page`, { params })
     },
     create(data) {
-        return privateAPI.post(this.url, data, { headers: { 'Content-Type': 'multipart/form-data' } })
+        return privateAPI.post(this.url, data, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
     },
     update(id, data) {
-        return privateAPI.put(`${this.url}/${id}`, data, { headers: { 'Content-Type': 'multipart/form-data' } })
+        return privateAPI.put(`${this.url}/${id}`, data, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
     },
     delete(data) {
         return privateAPI.delete(this.url, { data })
     },
 }
 
-const adminAPI = { user, role, movie, food }
+const cinema = {
+    url: '/admin/cinema',
+    getAll(params) {
+        return privateAPI.get(this.url, { params })
+    },
+    getOne(id) {
+        return privateAPI.get(`${this.url}/${id}`)
+    },
+    create(data) {
+        return privateAPI.post(this.url, data)
+    },
+    update(id, data) {
+        return privateAPI.put(`${this.url}/${id}`, data)
+    },
+    delete(data) {
+        return privateAPI.delete(this.url, { data })
+    },
+}
+
+const room = {
+    url: '/admin/room',
+    getAll(params) {
+        return privateAPI.get(this.url, { params })
+    },
+    getOne(id) {
+        return privateAPI.get(`${this.url}/${id}`)
+    },
+    create(data) {
+        return privateAPI.post(this.url, data)
+    },
+    update(id, data) {
+        return privateAPI.put(`${this.url}/${id}`, data)
+    },
+    delete(data) {
+        return privateAPI.delete(this.url, { data })
+    },
+}
+
+const seat = {
+    url: '/admin/seat',
+    getAll(params) {
+        return privateAPI.get(this.url, { params })
+    },
+    create(data) {
+        return privateAPI.post(this.url, data)
+    },
+    update(id, data) {
+        return privateAPI.put(`${this.url}/${id}`, data)
+    },
+    delete(data) {
+        return privateAPI.delete(this.url, { data })
+    },
+}
+
+const seatType = {
+    url: '/admin/seattype',
+    getAll(params) {
+        return privateAPI.get(this.url, { params })
+    },
+    create(data) {
+        return privateAPI.post(this.url, data)
+    },
+    update(id, data) {
+        return privateAPI.put(`${this.url}/${id}`, data)
+    },
+    delete(data) {
+        return privateAPI.delete(this.url, { data })
+    },
+}
+
+const showtime = {
+    url: '/admin/showtime',
+    getAll(params) {
+        return privateAPI.get(this.url, { params })
+    },
+    createMany(data) {
+        return privateAPI.post(this.url, data)
+    },
+    update(id, data) {
+        return privateAPI.put(`${this.url}/${id}`, data)
+    },
+    delete(data) {
+        return privateAPI.delete(this.url, { data })
+    },
+}
+
+const adminAPI = { user, role, movie, food, cinema, room, seat, seatType, showtime }
 
 export default adminAPI

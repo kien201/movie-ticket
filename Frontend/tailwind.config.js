@@ -13,6 +13,9 @@ module.exports = {
             animation: {
                 slide: 'slideIn 1s',
             },
+            boxShadow: {
+                blur: '0 0 15px 0 rgb(0,0,0,0.1)',
+            },
             colors: {
                 'blue-primary': '#1BBAFD',
                 'blue-secondary': '#d1f1ff',
@@ -24,10 +27,10 @@ module.exports = {
                 'pink-primary': '#FE6BBA',
                 'green-primary': '#1AD598',
                 'orange-primary': '#F3654A',
-                'black-primary': '#17181A',
-                'black-secondary': '#809FB8',
-                'gray-primary': '#F1F4F9',
-                'gray-secondary': '#F9FBFC',
+                'black-primary': '#161c26',
+                'black-secondary': '#aaa',
+                'gray-primary': '#F2F2F2',
+                'gray-secondary': '#F9F9F9',
             },
         },
     },

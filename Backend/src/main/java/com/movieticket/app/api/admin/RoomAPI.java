@@ -18,16 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.movieticket.app.constants.RoleName;
 import com.movieticket.app.dto.RoomDTO;
 import com.movieticket.app.entity.RoomEntity;
-import com.movieticket.app.service.RoomService;
+import com.movieticket.app.service.IRoomService;
 
 @RestController
 @RequestMapping(value = "admin/room")
 public class RoomAPI {
-	@Autowired RoomService roomService;
+	@Autowired IRoomService roomService;
 	
 	@GetMapping
-	List<RoomEntity> getAll() {
-		return roomService.findAll();
+	List<RoomEntity> getAll(Long cinemaId) {
+		return roomService.findAll(cinemaId);
 	}
 	
 	@GetMapping("{id}")

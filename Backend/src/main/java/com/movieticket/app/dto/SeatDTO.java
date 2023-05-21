@@ -8,7 +8,6 @@ public class SeatDTO extends BaseDTO {
 	private String name;
 	private int rowOrder;
 	private int columnOrder;
-	private int status;
 	private Long roomId;
 	private Long typeId;
 }

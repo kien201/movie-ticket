@@ -1,17 +1,36 @@
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import { AuthProvider } from './contexts/AuthContext'
 import CheckRole, { RoleName } from './components/CheckRole'
 import { AdminLayout, HomeLayout } from './layouts'
-import { Home, Login, Dashboard, UserManage, MovieManage, FoodManage } from './pages'
+import {
+    Home,
+    Login,
+    Dashboard,
+    UserManage,
+    MovieManage,
+    FoodManage,
+    Movie,
+    MovieDetail,
+    CinemaManage,
+    RoomManage,
+    SeatManage,
+    ShowtimeManage,
+} from './pages'
 
 const router = createBrowserRouter([
     {
-        path: '/',
+        path: '/*',
         element: <HomeLayout />,
-        children: [{ index: true, element: <Home /> }],
+        children: [
+            { index: true, element: <Home /> },
+            { path: 'movie', element: <Movie /> },
+            { path: 'movie/:slug', element: <MovieDetail /> },
+            { path: 'cinema', element: <Home /> },
+            { path: '*', element: <Navigate to="/" replace /> },
+        ],
     },
     {
         path: 'admin/*',
@@ -31,12 +50,17 @@ const router = createBrowserRouter([
                 ),
             },
             {
-                path: 'cinema',
+                path: 'cinema/*',
                 element: (
                     <CheckRole roles={[RoleName.MANAGE_CINEMA]}>
-                        <Dashboard />
+                        <Outlet />
                     </CheckRole>
                 ),
+                children: [
+                    { index: true, element: <CinemaManage /> },
+                    { path: ':cinemaId/room', element: <RoomManage /> },
+                    { path: 'room/:roomId/seat', element: <SeatManage /> },
+                ],
             },
             {
                 path: 'food',
@@ -58,7 +82,7 @@ const router = createBrowserRouter([
                 path: 'showtime',
                 element: (
                     <CheckRole roles={[RoleName.MANAGE_SHOWTIME]}>
-                        <Dashboard />
+                        <ShowtimeManage />
                     </CheckRole>
                 ),
             },

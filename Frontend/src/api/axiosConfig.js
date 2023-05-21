@@ -3,7 +3,7 @@ import { toast } from 'react-toastify'
 
 function getAxios() {
     return axios.create({
-        baseURL: process.env.REACT_APP_SERVER_URL,
+        baseURL: process.env.REACT_APP_API_URL,
         withCredentials: true,
         headers: {
             'Content-Type': 'application/json',

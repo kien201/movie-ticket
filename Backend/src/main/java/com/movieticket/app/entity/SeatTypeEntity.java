@@ -20,6 +20,8 @@ public class SeatTypeEntity extends BaseEntity {
 	
 	private String name;
 	
+	private String color;
+	
 	private int price;
 	
 	@OneToMany(mappedBy = "type", cascade = CascadeType.ALL, orphanRemoval = true)

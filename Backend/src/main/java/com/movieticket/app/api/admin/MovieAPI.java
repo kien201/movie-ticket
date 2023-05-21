@@ -1,6 +1,7 @@
 package com.movieticket.app.api.admin;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,16 +23,21 @@ import com.movieticket.app.dto.MovieDTO;
 import com.movieticket.app.dto.Paging;
 import com.movieticket.app.dto.ResultWithPaging;
 import com.movieticket.app.entity.MovieEntity;
-import com.movieticket.app.service.MovieService;
+import com.movieticket.app.service.IMovieService;
 
 @RestController(value = "adminMovie")
 @RequestMapping(value = "admin/movie")
 public class MovieAPI {
-	@Autowired MovieService movieService;
+	@Autowired IMovieService movieService;
 	
 	@GetMapping
-	ResultWithPaging<MovieEntity> getAll(@RequestParam(defaultValue = "page") String type, Paging paging) {
-		return movieService.findAll(type, paging);
+	List<MovieEntity> getAll() {
+		return movieService.findAll();
+	}
+	
+	@GetMapping("page")
+	ResultWithPaging<MovieEntity> getAll(Paging paging) {
+		return movieService.findAll(paging);
 	}
 	
 	@GetMapping("{id}")

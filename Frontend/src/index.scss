@@ -26,13 +26,18 @@
     input[type="checkbox"], input[type="radio"] {
         @apply align-middle
     }
+    hr {
+        @apply mb-3
+    }
 }
 
 @layer components {
     .loading {
         @apply bg-slate-200 animate-pulse;
     }
-
+    .container-custom {
+        @apply container max-md:max-w-full mx-auto px-3;
+    }
     .table-custom {
         @apply w-full table-auto text-left;
         th, td {

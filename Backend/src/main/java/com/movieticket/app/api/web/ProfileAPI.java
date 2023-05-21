@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.movieticket.app.entity.UserEntity;
 import com.movieticket.app.security.AuthCookie;
-import com.movieticket.app.service.UserService;
+import com.movieticket.app.service.IUserService;
 import com.movieticket.app.utils.CookieUtil;
 
 @RestController
 @RequestMapping(value = "profile")
 public class ProfileAPI {
 	@Autowired
-	UserService userService;
+	IUserService userService;
 	
 	@GetMapping
 	UserEntity getCurrentUser() {

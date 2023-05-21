@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -34,4 +35,7 @@ public class SeatEntity extends BaseEntity {
 	@OneToMany(mappedBy = "seat", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private Set<TicketDetailEntity> ticketDetails = new HashSet<>();
+	
+	@Transient
+	private int isOccupied;
 }

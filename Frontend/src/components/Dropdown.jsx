@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-function Dropdown({ menu, ...props }) {
+function Dropdown({ Menu, ...props }) {
     const [show, setShow] = useState(false)
 
     const dropdownRef = useRef()
@@ -9,16 +9,16 @@ function Dropdown({ menu, ...props }) {
         function hideIfClickOutside(e) {
             if (!dropdownRef.current.contains(e.target)) setShow(false)
         }
-        document.addEventListener('click', hideIfClickOutside)
+        document.addEventListener('mousedown', hideIfClickOutside)
         return () => {
-            document.removeEventListener('click', hideIfClickOutside)
+            document.removeEventListener('mousedown', hideIfClickOutside)
         }
     }, [])
 
     return (
         <div ref={dropdownRef} className="relative">
             <button onClick={() => setShow((prev) => !prev)} {...props}></button>
-            {show && menu}
+            <Menu isShow={show} />
         </div>
     )
 }

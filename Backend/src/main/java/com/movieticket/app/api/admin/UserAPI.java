@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,16 +20,21 @@ import com.movieticket.app.dto.Paging;
 import com.movieticket.app.dto.ResultWithPaging;
 import com.movieticket.app.dto.UserDTO;
 import com.movieticket.app.entity.UserEntity;
-import com.movieticket.app.service.UserService;
+import com.movieticket.app.service.IUserService;
 
 @RestController
 @RequestMapping(value = "admin/user")
 public class UserAPI {
-	@Autowired UserService userService;
+	@Autowired IUserService userService;
 	
 	@GetMapping
-	ResultWithPaging<UserEntity> getAll(@RequestParam(defaultValue = "page") String type, Paging paging) {
-		return userService.findAll(type, paging);
+	List<UserEntity> getAll(){
+		return userService.findAll();
+	}
+	
+	@GetMapping("page")
+	ResultWithPaging<UserEntity> getAll(Paging paging) {
+		return userService.findAll(paging);
 	}
 	
 	@GetMapping("{id}")

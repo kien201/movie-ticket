@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.movieticket.app.constants.RoleName;
 import com.movieticket.app.dto.SeatTypeDTO;
 import com.movieticket.app.entity.SeatTypeEntity;
-import com.movieticket.app.service.SeatTypeService;
+import com.movieticket.app.service.ISeatTypeService;
 
 @RestController
 @RequestMapping(value = "admin/seattype")
 public class SeatTypeAPI {
-	@Autowired SeatTypeService seatTypeService;
+	@Autowired ISeatTypeService seatTypeService;
 	
 	@GetMapping
 	List<SeatTypeEntity> getAll() {
