@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Formula;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
@@ -29,4 +31,7 @@ public class FoodEntity extends BaseEntity {
 	@OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private Set<TicketDetailEntity> ticketDetails = new HashSet<>();
+	
+	@Formula("concat(name,description,price)")
+	private String searchValue;
 }

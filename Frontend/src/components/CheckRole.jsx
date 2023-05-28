@@ -2,12 +2,12 @@ import { Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { toast } from 'react-toastify'
 
-function CheckRole({ roles, children }) {
+function CheckRole({ roles = [], children }) {
     const { currentUser } = useAuth()
 
     if (
         !currentUser ||
-        (roles?.length > 0 && !roles.every((role) => currentUser.roles?.map((r) => r.name).includes(role)))
+        (roles.length > 0 && !roles.every((role) => currentUser.roles?.map((r) => r.name).includes(role)))
     ) {
         toast.error('Bạn không có đủ quyền. Vui lòng đăng nhập')
         return <Navigate to={'/login'} state={{ navigateBack: true }} />

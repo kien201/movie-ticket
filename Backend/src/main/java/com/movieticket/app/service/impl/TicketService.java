@@ -1,22 +1,31 @@
 package com.movieticket.app.service.impl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.movieticket.app.constants.Common;
+import com.movieticket.app.dto.PageDTO;
+import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.dto.TicketDTO;
+import com.movieticket.app.entity.FoodEntity;
 import com.movieticket.app.entity.SeatEntity;
 import com.movieticket.app.entity.ShowtimeEntity;
+import com.movieticket.app.entity.TicketDetailEntity;
 import com.movieticket.app.entity.TicketEntity;
+import com.movieticket.app.repository.FoodRepository;
 import com.movieticket.app.repository.SeatRepository;
 import com.movieticket.app.repository.ShowtimeRepository;
+import com.movieticket.app.repository.TicketDetailRepository;
 import com.movieticket.app.repository.TicketRepository;
 import com.movieticket.app.repository.UserRepository;
 import com.movieticket.app.service.ITicketService;
@@ -25,41 +34,78 @@ import com.movieticket.app.service.ITicketService;
 @Transactional
 public class TicketService implements ITicketService {
 	@Autowired TicketRepository ticketRepository;
+	@Autowired TicketDetailRepository ticketDetailRepository;
 	@Autowired UserRepository userRepository;
 	@Autowired ShowtimeRepository showtimeRepository;
 	@Autowired SeatRepository seatRepository;
+	@Autowired FoodRepository foodRepository;
 	
-	public List<TicketEntity> findAll(){
-		return ticketRepository.findAll(Sort.by(Direction.DESC, "id"));
+	public List<TicketEntity> findAll(LocalDate fromDate, LocalDate toDate){
+		return ticketRepository.findByFromDateAndToDateAndActiveTrue(fromDate, toDate);
+	}
+
+	public PageDTO<TicketEntity> findByFromDateAndToDate(LocalDate fromDate, LocalDate toDate, QueryFilter filter) {
+		Page<TicketEntity> page = ticketRepository.findByConcatFieldsContainsAndFromDateAndToDate(filter.getQ(), fromDate, toDate, filter.toPageable());
+		return PageDTO.from(page);
+	}
+	
+	public List<TicketEntity> findByUserId(Long userId){
+		return ticketRepository.findByUserIdAndActiveTrueOrderByCreatedDateDesc(userId);
 	}
 	
 	public TicketEntity findOne(Long id) {
 		return ticketRepository.findById(id).orElseThrow(()-> new NoSuchElementException("Không tìm thấy vé"));
 	}
 	
-	public TicketEntity create(TicketDTO ticketInfo) {
-		TicketEntity ticket = new TicketEntity();
-		ticket.setUser(userRepository.findById(ticketInfo.getUserId()).orElseThrow(()-> new NoSuchElementException("Không tìm thấy người dùng")));
-		ShowtimeEntity showtime = showtimeRepository.findById(ticketInfo.getShowtimeId()).orElseThrow(()-> new NoSuchElementException("Không tìm thấy lịch chiếu"));
+	private List<TicketDetailEntity> getTicketDetails(TicketDTO ticketDTO) {
+		List<SeatEntity> occupiedSeats = seatRepository.findOccupiedByShowtimeId(ticketDTO.getShowtimeId());
 		
-		if (showtime.getStartTime().minusMinutes(Common.ORDER_TICKET_VALID_BEFORE_MINUTES).isBefore(LocalDateTime.now())) throw new IllegalArgumentException("Đã quá hạn đặt vé, vui lòng đặt tại quầy thanh toán!");
+		if (!ticketDTO.getDetails().stream().anyMatch(details -> details.getSeatId() != null))
+			throw new IllegalArgumentException("Không tìm thấy thông tin ghế");
 		
-		List<SeatEntity> occupiedSeats = seatRepository.getOccupiedByShowtimeId(showtime.getId());
-		ticketInfo.getDetails().forEach(details -> {
-			boolean isOccupied = occupiedSeats.stream().anyMatch(seat -> seat.getId() == details.getSeatId());
-			if (isOccupied) throw new IllegalArgumentException("Ghế đã được đặt!");
-		});
-		ticket.setShowtime(showtime);
-		
-		return ticketRepository.save(ticket);
+		return ticketDTO.getDetails().stream().map(details -> {
+			TicketDetailEntity ticketDetail = new TicketDetailEntity();
+			BeanUtils.copyProperties(details, ticketDetail);
+			if (details.getSeatId() != null) {
+				SeatEntity seat = seatRepository.findById(details.getSeatId()).orElseThrow(()-> new NoSuchElementException("Không tìm thấy ghế"));
+				boolean isOccupied = occupiedSeats.stream().anyMatch(s -> s.getId() == seat.getId());
+				if (isOccupied) throw new IllegalArgumentException("Ghế đã được đặt!");
+				ticketDetail.setSeat(seat);
+				ticketDetail.setPrice(seat.getType().getPrice());
+			} else if (details.getFoodId() != null) {
+				FoodEntity food = foodRepository.findById(details.getFoodId()).orElseThrow(()-> new NoSuchElementException("Không tìm thấy đồ ăn"));
+				ticketDetail.setFood(food);
+				ticketDetail.setPrice(food.getPrice());
+			} else throw new IllegalArgumentException("Không có thông tin đặt vé");
+			return ticketDetail;
+		}).collect(Collectors.toList());
 	}
 	
-	public TicketEntity update(Long id, TicketDTO ticketInfo) {
+	public TicketEntity create(TicketDTO ticketDTO) {
+		TicketEntity ticket = new TicketEntity();
+		ticket.setUser(userRepository.findById(ticketDTO.getUserId()).orElseThrow(()-> new NoSuchElementException("Không tìm thấy người dùng")));
+		ShowtimeEntity showtime = showtimeRepository.findById(ticketDTO.getShowtimeId()).orElseThrow(()-> new NoSuchElementException("Không tìm thấy lịch chiếu"));
+		if (showtime.getStartTime().minusMinutes(Common.ORDER_TICKET_VALID_BEFORE_MINUTES).isBefore(LocalDateTime.now())) throw new IllegalArgumentException("Đã quá hạn đặt vé, vui lòng đặt tại quầy thanh toán!");
+		ticket.setShowtime(showtime);
+		ticket.setActive(false);
+		
+		List<TicketDetailEntity> ticketDetails = ticketDetailRepository.saveAll(getTicketDetails(ticketDTO));
+		TicketEntity savedTicket = ticketRepository.save(ticket);
+		
+		savedTicket.setDetails(new HashSet<>(ticketDetails));
+		ticketDetails.forEach(detail -> detail.setTicket(savedTicket));;
+		
+		return savedTicket;
+	}
+	
+	public TicketEntity update(Long id, TicketDTO ticketDTO) {
 		TicketEntity ticket = findOne(id);
-		ticket.setUser(userRepository.findById(ticketInfo.getUserId()).orElseThrow(()-> new NoSuchElementException("Không tìm thấy người dùng")));
-		ticket.setShowtime(showtimeRepository.findById(ticketInfo.getShowtimeId()).orElseThrow(()-> new NoSuchElementException("Không tìm thấy lịch chiếu")));
-//		ticketInfo.getDetails()
+		BeanUtils.copyProperties(ticketDTO, ticket);
 		return ticket;
+	}
+	
+	public int updateStatus(Long id, int status) {
+		return ticketRepository.updateStatusById(id, status);
 	}
 	
 	public int delete(Long[] ids) {

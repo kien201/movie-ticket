@@ -10,13 +10,10 @@ import SidebarLink from './SidebarLink'
 function Sidebar({ className }) {
     return (
         <div
-            className={`fixed z-10 left-0 h-full transition-transform duration-700 bg-white overflow-y-auto ${className}`}
+            className={`fixed z-30 left-0 h-full transition-transform duration-700 bg-white overflow-y-auto ${className}`}
         >
             <SidebarLink to="/admin" end icon={<AiOutlineDashboard />}>
                 Dashboard
-            </SidebarLink>
-            <SidebarLink to="/admin/user" icon={<FaUserEdit />}>
-                Người dùng
             </SidebarLink>
             <SidebarLink to="/admin/movie" icon={<BiCameraMovie />}>
                 Phim
@@ -32,6 +29,9 @@ function Sidebar({ className }) {
             </SidebarLink>
             <SidebarLink to="/admin/ticket" icon={<IoTicket />}>
                 Vé
+            </SidebarLink>
+            <SidebarLink to="/admin/user" icon={<FaUserEdit />}>
+                Người dùng
             </SidebarLink>
         </div>
     )

@@ -10,5 +10,6 @@ import lombok.Setter;
 public class TicketDTO extends BaseDTO {
 	private Long userId;
 	private Long showtimeId;
-	List<TicketDetailDTO> details = new ArrayList<>();
+	private String note;
+	private List<TicketDetailDTO> details = new ArrayList<>();
 }

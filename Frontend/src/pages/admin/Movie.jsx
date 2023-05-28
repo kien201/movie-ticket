@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { AiFillDelete } from 'react-icons/ai'
 import { IoMdAdd } from 'react-icons/io'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { MdOutlineFileUpload } from 'react-icons/md'
+import { TiArrowSortedDown, TiArrowSortedUp } from 'react-icons/ti'
 import { toast } from 'react-toastify'
 
 import Modal from '../../components/Modal'
@@ -14,6 +15,8 @@ import Pagination from '../../components/Pagination'
 import { validateField, validateObject } from '../../utils/validateUtil'
 import dateUtil from '../../utils/dateUtil'
 import Image from '../../components/Image'
+import { handleError } from '../../api/axiosConfig'
+import InputDelay from '../../components/InputDelay'
 
 const dataRequestInit = {
     id: '',
@@ -46,8 +49,11 @@ function Movie() {
     const [showModalUpdate, setShowModalUpdate] = useState(false)
     const [showModalDelete, setShowModalDelete] = useState(false)
 
-    const [movies, setMovies] = useState([])
-    const [paging, setPaging] = useState({})
+    const [query, setQuery] = useState({})
+    const [movies, setMovies] = useState({
+        data: [],
+        page: {},
+    })
 
     const [selectedId, setSelectedId] = useState([])
     const [dataRequest, setDataRequest] = useState(dataRequestInit)
@@ -55,23 +61,22 @@ function Movie() {
 
     const thumbnailUrl = useRef()
 
-    async function loadMovies(query) {
-        try {
-            const res = await adminAPI.movie.getAllWithPage(query)
-            setMovies(res.data.result)
-            setPaging(res.data.paging)
-        } catch (err) {
-            toast.error('Lỗi load danh sách')
-            console.log(err)
-        }
-    }
-
     useEffect(() => {
+        async function loadMovies() {
+            try {
+                const res = await adminAPI.movie.getAllWithPage(query)
+                setMovies(res.data)
+            } catch (error) {
+                toast.error('Lỗi load danh sách')
+                console.log(error)
+            }
+        }
+
         ;(async function () {
             await loadMovies()
             setLoading(false)
         })()
-    }, [])
+    }, [query])
 
     const handleFormInputChange = (e) => {
         const { name, value, type, checked, files, valueAsNumber } = e.target
@@ -99,12 +104,13 @@ function Movie() {
         try {
             const res = await adminAPI.movie.create(dataRequest)
             toast.success('Thêm mới thành công')
-            // loadMovies(paging)
-            setMovies((prev) => [res.data, ...prev])
-            setPaging((prev) => ({ ...prev, totalItems: prev.totalItems + 1 }))
+            setMovies((prev) => ({
+                data: [res.data, ...prev.data],
+                page: { ...prev.page, totalItems: prev.page.totalItems + 1 },
+            }))
             setShowModalCreate(false)
         } catch (error) {
-            toast.error(error.response.data.message)
+            handleError(error)
         }
     }
 
@@ -118,10 +124,13 @@ function Movie() {
         try {
             const res = await adminAPI.movie.update(dataRequest.id, dataRequest)
             toast.success('Cập nhật thành công')
-            setMovies((prev) => prev.map((movie) => (movie.id === res.data.id ? res.data : movie)))
+            setMovies((prev) => ({
+                ...prev,
+                data: prev.data.map((movie) => (movie.id === res.data.id ? res.data : movie)),
+            }))
             setShowModalUpdate(false)
         } catch (error) {
-            toast.error(error.response.data.message)
+            handleError(error)
         }
     }
 
@@ -129,14 +138,48 @@ function Movie() {
         try {
             await adminAPI.movie.delete(selectedId)
             toast.success('Xoá phim thành công')
-            // loadMovies(paging)
-            setMovies((prev) => prev.filter((movie) => !selectedId.includes(movie.id)))
-            setPaging((prev) => ({ ...prev, totalItems: prev.totalItems - selectedId.length }))
+            setMovies((prev) => ({
+                data: prev.data.filter((movie) => !selectedId.includes(movie.id)),
+                page: { ...prev.page, totalItems: prev.page.totalItems - selectedId.length },
+            }))
             setSelectedId([])
             setShowModalDelete(false)
         } catch (error) {
             toast.error('Lỗi xoá phim')
         }
+    }
+
+    const renderTableHeader = (text, property) => {
+        let Icon,
+            newDirection = 'ASC'
+        const { property: currentProperty, direction: currentDirection } = movies.page
+        if (property === currentProperty) {
+            if (currentDirection === 'ASC') {
+                Icon = TiArrowSortedUp
+                newDirection = 'DESC'
+            } else {
+                Icon = TiArrowSortedDown
+            }
+        } else {
+            Icon = Fragment
+        }
+
+        return (
+            <th>
+                <button
+                    onClick={(e) =>
+                        setQuery((prev) => ({ ...prev, page: 1, property: property, direction: newDirection }))
+                    }
+                >
+                    <div className="flex items-center hover:opacity-80">
+                        {text}
+                        <div className="w-4">
+                            <Icon />
+                        </div>
+                    </div>
+                </button>
+            </th>
+        )
     }
 
     return isLoading ? (
@@ -167,18 +210,26 @@ function Movie() {
                     </button>
                 </div>
                 <div className="mb-3">
-                    <select
-                        className="mr-2 border rounded outline-none"
-                        value={paging.size}
-                        onChange={(e) => loadMovies({ ...paging, page: 1, size: e.target.value })}
-                    >
-                        <option value="2">2</option>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                        {paging.totalItems > 20 && <option value={paging.totalItems}>Tất cả</option>}
-                    </select>
-                    dòng / trang
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <select
+                                className="mr-2 border rounded outline-none"
+                                value={movies.page.size}
+                                onChange={(e) => setQuery((prev) => ({ ...prev, page: 1, size: e.target.value }))}
+                            >
+                                <option value="2">2</option>
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                {movies.page.totalItems > 20 && <option value={movies.page.totalItems}>Tất cả</option>}
+                            </select>
+                            <span>dòng / trang</span>
+                        </div>
+                        <InputDelay
+                            className="flex px-3 py-1 items-center border rounded-full focus-within:border-blue-primary"
+                            onAfterDelay={(value) => setQuery((prev) => ({ ...prev, page: 1, q: value }))}
+                        />
+                    </div>
                 </div>
                 <table className="table-custom">
                     <thead>
@@ -194,19 +245,19 @@ function Movie() {
                                     }}
                                 />
                             </th>
-                            <th>#</th>
-                            <th>Tên</th>
-                            <th>Đạo diễn</th>
-                            <th>Diễn viên</th>
-                            <th>Thể loại</th>
-                            <th>Khởi chiếu</th>
-                            <th>Thời lượng</th>
-                            <th>Kích hoạt</th>
+                            {renderTableHeader('#', 'id')}
+                            {renderTableHeader('Tên', 'name')}
+                            {renderTableHeader('Đạo diễn', 'director')}
+                            {renderTableHeader('Diễn viên', 'actor')}
+                            {renderTableHeader('Thể loại', 'genre')}
+                            {renderTableHeader('Khởi chiếu', 'premiere')}
+                            {renderTableHeader('Thời lượng', 'duration')}
+                            {renderTableHeader('Kích hoạt', 'active')}
                             <th className="w-1"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {movies.map((movie) => (
+                        {movies.data.map((movie) => (
                             <tr key={movie.id}>
                                 <td>
                                     <input
@@ -223,7 +274,7 @@ function Movie() {
                                 <td>{movie.director}</td>
                                 <td>{movie.actor}</td>
                                 <td>{movie.genre}</td>
-                                <td>{dateUtil.format(new Date(movie.premiere), dateUtil.DATE_FORMAT)}</td>
+                                <td>{dateUtil.format(movie.premiere, dateUtil.DATE_FORMAT)}</td>
                                 <td>{movie.duration} phút</td>
                                 <td>
                                     {movie.active ? (
@@ -266,16 +317,16 @@ function Movie() {
                 </table>
                 <div className="flex justify-between mt-2">
                     <p>
-                        Hiển thị <span className="text-blue-primary">{movies.length}</span> / tổng số{' '}
-                        <span className="text-blue-primary">{paging.totalItems}</span>
+                        Hiển thị <span className="text-blue-primary">{movies.data.length}</span> / tổng số{' '}
+                        <span className="text-blue-primary">{movies.page.totalItems}</span>
                     </p>
-                    {paging.totalPages > 1 && (
+                    {movies.page.totalPages > 1 && (
                         <Pagination
-                            currentPage={paging.page}
-                            totalPage={paging.totalPages}
-                            onPageClick={(page) => {
-                                loadMovies({ ...paging, page })
-                            }}
+                            className="flex gap-1"
+                            buttonClassName="py-1 px-3 rounded enabled:hover:bg-gray-primary aria-[current]:bg-blue-primary aria-[current]:text-white"
+                            currentPage={movies.page.page}
+                            totalPage={movies.page.totalPages}
+                            onPageClick={(page) => setQuery((prev) => ({ ...prev, page }))}
                         />
                     )}
                 </div>
@@ -312,7 +363,7 @@ function Movie() {
                                 <label>
                                     Tên
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="name"
                                         value={dataRequest.name}
@@ -326,10 +377,10 @@ function Movie() {
                             <div className="mb-3">
                                 <label>
                                     Mô tả
-                                    <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
-                                        type="text"
+                                    <textarea
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         name="description"
+                                        rows={3}
                                         value={dataRequest.description}
                                         onChange={handleFormInputChange}
                                         aria-invalid={errors.description}
@@ -343,7 +394,7 @@ function Movie() {
                                 <label>
                                     Đạo diễn
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="director"
                                         value={dataRequest.director}
@@ -357,7 +408,7 @@ function Movie() {
                                 <label>
                                     Diễn viên
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="actor"
                                         value={dataRequest.actor}
@@ -371,7 +422,7 @@ function Movie() {
                                 <label>
                                     Thể loại
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="genre"
                                         value={dataRequest.genre}
@@ -385,7 +436,7 @@ function Movie() {
                                 <label>
                                     Khởi chiếu
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="date"
                                         name="premiere"
                                         value={dataRequest.premiere}
@@ -397,7 +448,7 @@ function Movie() {
                                 <label>
                                     Thời lượng
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="number"
                                         name="duration"
                                         min={0}
@@ -464,7 +515,7 @@ function Movie() {
                                 <label>
                                     Tên
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="name"
                                         value={dataRequest.name}
@@ -478,10 +529,10 @@ function Movie() {
                             <div className="mb-3">
                                 <label>
                                     Mô tả
-                                    <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
-                                        type="text"
+                                    <textarea
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         name="description"
+                                        rows={3}
                                         value={dataRequest.description}
                                         onChange={handleFormInputChange}
                                         aria-invalid={errors.description}
@@ -495,7 +546,7 @@ function Movie() {
                                 <label>
                                     Đạo diễn
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="director"
                                         value={dataRequest.director}
@@ -509,7 +560,7 @@ function Movie() {
                                 <label>
                                     Diễn viên
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="actor"
                                         value={dataRequest.actor}
@@ -523,7 +574,7 @@ function Movie() {
                                 <label>
                                     Thể loại
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="genre"
                                         value={dataRequest.genre}
@@ -537,7 +588,7 @@ function Movie() {
                                 <label>
                                     Khởi chiếu
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="date"
                                         name="premiere"
                                         value={dataRequest.premiere}
@@ -549,7 +600,7 @@ function Movie() {
                                 <label>
                                     Thời lượng
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="number"
                                         name="duration"
                                         min={0}

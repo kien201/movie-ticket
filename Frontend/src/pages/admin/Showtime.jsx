@@ -8,6 +8,7 @@ import Dropdown from '../../components/Dropdown'
 import adminAPI from '../../api/adminAPI'
 import dateUtil from '../../utils/dateUtil'
 import { FaTimes } from 'react-icons/fa'
+import { handleError } from '../../api/axiosConfig'
 
 function Showtime() {
     const [isLoading, setLoading] = useState(true)
@@ -26,7 +27,7 @@ function Showtime() {
 
     const dataRequestInit = {
         id: '',
-        startTime: dateUtil.format(new Date(filter.startTime), 'yyyy-MM-ddT00:00'),
+        startTime: dateUtil.format(filter.startTime, 'yyyy-MM-ddT00:00'),
         movieId: movies[0]?.id,
         roomId: rooms[0]?.id,
         active: true,
@@ -40,9 +41,9 @@ function Showtime() {
                 const res = await adminAPI.cinema.getAll()
                 setCinemas(res.data)
                 setFilter((prev) => ({ ...prev, cinemaId: res.data[0]?.id }))
-            } catch (err) {
+            } catch (error) {
                 toast.error('Lỗi load danh sách rạp')
-                console.log(err)
+                console.log(error)
             }
         }
 
@@ -50,9 +51,9 @@ function Showtime() {
             try {
                 const res = await adminAPI.movie.getAll()
                 setMovies(res.data)
-            } catch (err) {
+            } catch (error) {
                 toast.error('Lỗi load danh sách phim')
-                console.log(err)
+                console.log(error)
             }
         }
 
@@ -67,18 +68,18 @@ function Showtime() {
             try {
                 const res = await adminAPI.room.getAll({ cinemaId: filter.cinemaId })
                 setRooms(res.data)
-            } catch (err) {
+            } catch (error) {
                 toast.error('Lỗi load phòng')
-                console.log(err)
+                console.log(error)
             }
         }
         async function loadShowtimes() {
             try {
                 const res = await adminAPI.showtime.getAll(filter)
                 setShowtimes(res.data)
-            } catch (err) {
+            } catch (error) {
                 toast.error('Lỗi load lịch chiếu')
-                console.log(err)
+                console.log(error)
             }
         }
 
@@ -101,14 +102,13 @@ function Showtime() {
             toast.success('Thêm mới thành công')
             setShowtimes((prev) => [
                 ...res.data.filter(
-                    (showtime) =>
-                        dateUtil.format(new Date(showtime.startTime), dateUtil.INPUT_DATE_FORMAT) === filter.startTime
+                    (showtime) => dateUtil.format(showtime.startTime, dateUtil.INPUT_DATE_FORMAT) === filter.startTime
                 ),
                 ...prev,
             ])
             setShowModalCreate(false)
         } catch (error) {
-            toast.error(error.response.data.message)
+            handleError(error)
         }
     }
 
@@ -126,7 +126,7 @@ function Showtime() {
             setShowtimes((prev) => prev.map((showtime) => (showtime.id === res.data.id ? res.data : showtime)))
             setShowModalUpdate(false)
         } catch (error) {
-            toast.error(error.response.data.message)
+            handleError(error)
         }
     }
 
@@ -149,7 +149,7 @@ function Showtime() {
                 <div className="mb-3 flex items-center gap-5">
                     <span>Rạp</span>
                     <select
-                        className="max-w-[50%] text-ellipsis border rounded-md px-3 py-2 focus:outline outline-1 outline-blue-primary"
+                        className="max-w-[50%] text-ellipsis border rounded-md px-3 py-2 focus:outline outline-blue-primary"
                         value={filter.cinemaId}
                         onChange={(e) => setFilter((prev) => ({ ...prev, cinemaId: e.target.value }))}
                     >
@@ -162,7 +162,7 @@ function Showtime() {
                     <span>Ngày</span>
                     <input
                         type="date"
-                        className="border rounded-md px-3 py-2 focus:outline outline-1 outline-blue-primary"
+                        className="border rounded-md px-3 py-2 focus:outline outline-blue-primary"
                         value={filter.startTime}
                         onChange={(e) => setFilter((prev) => ({ ...prev, startTime: e.target.value }))}
                     />
@@ -236,7 +236,7 @@ function Showtime() {
                                                 </Dropdown>
                                             </div>
                                             <h1 className="text-xl font-semibold">
-                                                {dateUtil.format(new Date(showtime.startTime), dateUtil.TIME_FORMAT)}
+                                                {dateUtil.format(showtime.startTime, dateUtil.TIME_FORMAT)}
                                             </h1>
                                             <p className="whitespace-nowrap overflow-hidden text-ellipsis">
                                                 {showtime.movie.name}
@@ -262,7 +262,7 @@ function Showtime() {
                                         <label>
                                             <span>Phòng</span>
                                             <select
-                                                className="w-full text-ellipsis border rounded-md px-3 py-2 focus:outline outline-1 outline-blue-primary"
+                                                className="w-full text-ellipsis border rounded-md px-3 py-2 focus:outline outline-blue-primary"
                                                 name="roomId"
                                                 value={item.roomId}
                                                 onChange={(e) => handleFormCreateChange(e, index)}
@@ -278,7 +278,7 @@ function Showtime() {
                                         <label>
                                             <span>Phim</span>
                                             <select
-                                                className="w-full text-ellipsis border rounded-md px-3 py-2 focus:outline outline-1 outline-blue-primary"
+                                                className="w-full text-ellipsis border rounded-md px-3 py-2 focus:outline outline-blue-primary"
                                                 name="movieId"
                                                 value={item.movieId}
                                                 onChange={(e) => handleFormCreateChange(e, index)}
@@ -294,7 +294,7 @@ function Showtime() {
                                             <span>Thời gian bắt đầu</span>
                                             <div>
                                                 <input
-                                                    className="w-full border rounded-md px-3 py-2 focus:outline outline-1 outline-blue-primary"
+                                                    className="w-full border rounded-md px-3 py-2 focus:outline outline-blue-primary"
                                                     type="datetime-local"
                                                     name="startTime"
                                                     value={item.startTime}
@@ -356,7 +356,7 @@ function Showtime() {
                                 <label>
                                     Phòng
                                     <select
-                                        className="border rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         name="roomId"
                                         value={dataRequest.roomId}
                                         onChange={handleFormUpdateChange}
@@ -374,7 +374,7 @@ function Showtime() {
                                 <label>
                                     Phim
                                     <select
-                                        className="border rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         name="movieId"
                                         value={dataRequest.movieId}
                                         onChange={handleFormUpdateChange}
@@ -391,7 +391,7 @@ function Showtime() {
                                 <label>
                                     Thời gian bắt đầu
                                     <input
-                                        className="border rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="datetime-local"
                                         name="startTime"
                                         value={dataRequest.startTime}
@@ -433,7 +433,7 @@ function Showtime() {
                             Bạn có chắc muốn xóa lịch chiếu tại phòng{' '}
                             <span className="text-blue-primary">{dataRequest.room.name}</span> vào{' '}
                             <span className="text-blue-primary">
-                                {dateUtil.format(new Date(dataRequest.startTime), dateUtil.DATETIME_FORMAT)}
+                                {dateUtil.format(dataRequest.startTime, dateUtil.DATETIME_FORMAT)}
                             </span>{' '}
                             ?
                         </p>

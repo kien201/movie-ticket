@@ -4,14 +4,15 @@ import java.io.IOException;
 import java.util.List;
 
 import com.movieticket.app.dto.MovieDTO;
-import com.movieticket.app.dto.Paging;
-import com.movieticket.app.dto.ResultWithPaging;
+import com.movieticket.app.dto.PageDTO;
+import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.entity.MovieEntity;
 
 public interface IMovieService {
-	ResultWithPaging<MovieEntity> findAll(Paging paging);
-	
 	List<MovieEntity> findAll();
+	List<MovieEntity> findTop3ByOrderByTicketCount();
+	PageDTO<MovieEntity> findAll(QueryFilter filter);
+	PageDTO<MovieEntity> findAll(QueryFilter filter, String type);
 	
 	MovieEntity findOne(Long id);
 	

@@ -63,7 +63,7 @@ function Login() {
                         <div className="text-2xl font-bold text-center mb-10">Đăng Nhập</div>
                         <div className="mb-3">
                             <input
-                                className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                 type="text"
                                 placeholder="Tài khoản"
                                 id="username"
@@ -77,7 +77,7 @@ function Login() {
                         </div>
                         <div className="mb-3">
                             <input
-                                className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                 type="password"
                                 placeholder="Mật khẩu"
                                 id="password"
@@ -103,7 +103,10 @@ function Login() {
                             Đăng nhập
                         </button>
                         <p className="text-center text-xs">
-                            Chưa có tài khoản? <Link className="text-blue-primary">Đăng ký</Link>
+                            Chưa có tài khoản?{' '}
+                            <Link to="/register" className="text-blue-primary">
+                                Đăng ký
+                            </Link>
                         </p>
                     </div>
                 </div>

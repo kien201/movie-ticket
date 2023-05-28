@@ -2,7 +2,6 @@ package com.movieticket.app.security;
 
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -16,12 +15,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.movieticket.app.entity.UserEntity;
 import com.movieticket.app.repository.UserRepository;
 import com.movieticket.app.utils.CookieUtil;
-import com.movieticket.app.utils.ErrorMsgUtil;
 import com.movieticket.app.utils.JwtUtil;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
@@ -45,21 +41,17 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 			}
 			String token = URLDecoder.decode(authCookie.getValue(), "UTF-8").replace(AuthCookie.TOKEN_PREFIX, "");
 			UserEntity user = userRepository.findByUsername(JwtUtil.verifyToken(token)).orElse(null);
-			
-			UserPrincipal principal = new UserPrincipal(user);
-			Authentication auth = new UsernamePasswordAuthenticationToken(principal.getUsername(), null, principal.getAuthorities());
-			SecurityContextHolder.getContext().setAuthentication(auth);
+			if (user != null) {
+				UserPrincipal principal = new UserPrincipal(user);
+				Authentication auth = new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+				SecurityContextHolder.getContext().setAuthentication(auth);
+			}
 			chain.doFilter(request, response);
 		} catch (Exception ex) {
 //			authCookie.setMaxAge(0);
 //			authCookie.setPath("/");
 //			response.addCookie(authCookie);
-			
-			int status = HttpServletResponse.SC_UNAUTHORIZED;
-			response.setStatus(status);
-			response.setContentType("application/json");
-			Map<String, Object> error = ErrorMsgUtil.getError(request, ex, status);
-			new ObjectMapper().writeValue(response.getOutputStream(), error);
+			chain.doFilter(request, response);
 		}
 	}
 }

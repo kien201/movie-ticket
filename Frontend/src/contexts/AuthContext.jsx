@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 
 import webAPI from '../api/webAPI'
-import Logo from '../components/Logo'
+import Loading from '../components/Loading'
 import localStorageUtil from '../utils/localStorageUtil'
 
 const AuthContext = createContext()
@@ -16,7 +16,7 @@ function AuthProvider(props) {
 
         if (isLoading) {
             if (isLogin === true) {
-                webAPI.user
+                webAPI.profile
                     .getCurrentUser()
                     .then((res) => setCurrentUser(res.data))
                     .catch((err) => {
@@ -30,7 +30,7 @@ function AuthProvider(props) {
 
     const login = async (data, onLoginSuccess = () => {}) => {
         try {
-            const res = await webAPI.user.login(data)
+            const res = await webAPI.profile.login(data)
             localStorageUtil.setItem('isLogin', true)
             setLoading(true)
             toast.success('Đăng nhập thành công')
@@ -45,7 +45,7 @@ function AuthProvider(props) {
 
     const logout = async () => {
         try {
-            const res = await webAPI.user.logout()
+            const res = await webAPI.profile.logout()
             localStorage.removeItem('isLogin')
             setCurrentUser(null)
             return res
@@ -56,15 +56,7 @@ function AuthProvider(props) {
 
     const value = { currentUser, login, logout }
 
-    return isLoading ? (
-        <div className="h-screen flex items-center justify-center">
-            <div className="animate-pulse">
-                <Logo />
-            </div>
-        </div>
-    ) : (
-        <AuthContext.Provider value={value} {...props}></AuthContext.Provider>
-    )
+    return isLoading ? <Loading /> : <AuthContext.Provider value={value} {...props}></AuthContext.Provider>
 }
 
 function useAuth() {

@@ -1,5 +1,6 @@
 package com.movieticket.app.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
@@ -12,5 +13,5 @@ public class UserDTO extends BaseDTO {
 	private String email;
 	private String password;
 	private String phoneNumber;
-	private List<String> roleNames;
+	private List<String> roleNames = new ArrayList<>();
 }

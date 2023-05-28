@@ -2,6 +2,8 @@ package com.movieticket.app.security;
 
 import java.util.Arrays;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -74,7 +76,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.authorizeRequests()
 			.antMatchers("/admin/**").hasAuthority(RoleName.SHOW_ADMIN)
 			.antMatchers("/profile/**").authenticated()
-			.anyRequest().permitAll();
+			.anyRequest().permitAll()
+			.and().exceptionHandling()
+			.authenticationEntryPoint((req, res, ex) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"));
 	}
 	
 	@Bean

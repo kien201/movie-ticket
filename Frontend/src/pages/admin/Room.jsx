@@ -8,6 +8,7 @@ import Dropdown from '../../components/Dropdown'
 import adminAPI from '../../api/adminAPI'
 import { validateField, validateObject } from '../../utils/validateUtil'
 import { Link, useParams } from 'react-router-dom'
+import { handleError } from '../../api/axiosConfig'
 
 const validateRules = [
     {
@@ -42,9 +43,9 @@ function Room() {
             try {
                 const res = await adminAPI.cinema.getOne(cinemaId)
                 setCinema(res.data)
-            } catch (err) {
+            } catch (error) {
                 toast.error('Lỗi load danh sách')
-                console.log(err)
+                console.log(error)
             }
         }
 
@@ -52,9 +53,9 @@ function Room() {
             try {
                 const res = await adminAPI.room.getAll({ cinemaId })
                 setRooms(res.data)
-            } catch (err) {
+            } catch (error) {
                 toast.error('Lỗi load danh sách')
-                console.log(err)
+                console.log(error)
             }
         }
 
@@ -87,7 +88,7 @@ function Room() {
             setRooms((prev) => [res.data, ...prev])
             setShowModalCreate(false)
         } catch (error) {
-            toast.error(error.response.data.message)
+            handleError(error)
         }
     }
 
@@ -104,7 +105,7 @@ function Room() {
             setRooms((prev) => prev.map((room) => (room.id === res.data.id ? res.data : room)))
             setShowModalUpdate(false)
         } catch (error) {
-            toast.error(error.response.data.message)
+            handleError(error)
         }
     }
 
@@ -202,7 +203,7 @@ function Room() {
                                 <label>
                                     Tên
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="name"
                                         value={dataRequest.name}
@@ -248,7 +249,7 @@ function Room() {
                                 <label>
                                     Tên
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="name"
                                         value={dataRequest.name}

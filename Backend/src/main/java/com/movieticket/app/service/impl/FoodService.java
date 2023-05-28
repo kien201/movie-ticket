@@ -7,7 +7,6 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -15,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.movieticket.app.constants.Common;
 import com.movieticket.app.dto.FoodDTO;
-import com.movieticket.app.dto.Paging;
-import com.movieticket.app.dto.ResultWithPaging;
+import com.movieticket.app.dto.PageDTO;
+import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.entity.FoodEntity;
 import com.movieticket.app.repository.FoodRepository;
 import com.movieticket.app.service.IFoodService;
@@ -27,18 +26,13 @@ import com.movieticket.app.utils.UploadUtil;
 public class FoodService implements IFoodService {
 	@Autowired FoodRepository foodRepository;
 	
-	public ResultWithPaging<FoodEntity> findAll(Paging paging){
-		ResultWithPaging<FoodEntity> rs = new ResultWithPaging<>();
-		Page<FoodEntity> page = foodRepository.findAll(PageRequest.of(paging.getPage()-1, paging.getSize(), paging.getDirection(), paging.getProperty()));
-		rs.setResult(page.getContent());
-		paging.setTotalItems(page.getTotalElements());
-		paging.setTotalPages(page.getTotalPages());
-		rs.setPaging(paging);
-		return rs;
-	}
-	
 	public List<FoodEntity> findAll(){
 		return foodRepository.findAll(Sort.by(Direction.DESC, "id"));
+	}
+	
+	public PageDTO<FoodEntity> findAll(QueryFilter filter){
+		Page<FoodEntity> page = foodRepository.findBySearchValueContains(filter.getQ(), filter.toPageable());
+		return PageDTO.from(page);
 	}
 	
 	public FoodEntity findOne(Long id) {

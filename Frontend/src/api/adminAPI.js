@@ -157,6 +157,25 @@ const showtime = {
     },
 }
 
-const adminAPI = { user, role, movie, food, cinema, room, seat, seatType, showtime }
+const ticket = {
+    url: '/admin/ticket',
+    getAll(params) {
+        return privateAPI.get(this.url, { params })
+    },
+    getAllWithPage(params) {
+        return privateAPI.get(`${this.url}/page`, { params })
+    },
+    create(data) {
+        return privateAPI.post(this.url, data)
+    },
+    update(id, data) {
+        return privateAPI.put(`${this.url}/${id}`, data)
+    },
+    delete(data) {
+        return privateAPI.delete(this.url, { data })
+    },
+}
+
+const adminAPI = { user, role, movie, food, cinema, room, seat, seatType, showtime, ticket }
 
 export default adminAPI

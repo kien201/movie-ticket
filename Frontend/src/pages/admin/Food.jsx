@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { AiFillDelete } from 'react-icons/ai'
 import { IoMdAdd } from 'react-icons/io'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { MdOutlineFileUpload } from 'react-icons/md'
+import { TiArrowSortedDown, TiArrowSortedUp } from 'react-icons/ti'
 import { toast } from 'react-toastify'
 
 import Modal from '../../components/Modal'
@@ -10,9 +11,12 @@ import Dropdown from '../../components/Dropdown'
 import adminAPI from '../../api/adminAPI'
 import webAPI from '../../api/webAPI'
 import arrayUtil from '../../utils/arrayUtil'
+import currencyUtil from '../../utils/currencyUtil'
 import Pagination from '../../components/Pagination'
 import { validateField, validateObject } from '../../utils/validateUtil'
 import Image from '../../components/Image'
+import { handleError } from '../../api/axiosConfig'
+import InputDelay from '../../components/InputDelay'
 
 const dataRequestInit = {
     id: '',
@@ -41,8 +45,11 @@ function Food() {
     const [showModalUpdate, setShowModalUpdate] = useState(false)
     const [showModalDelete, setShowModalDelete] = useState(false)
 
-    const [foods, setFoods] = useState([])
-    const [paging, setPaging] = useState({})
+    const [query, setQuery] = useState({})
+    const [foods, setFoods] = useState({
+        data: [],
+        page: {},
+    })
 
     const [selectedId, setSelectedId] = useState([])
     const [dataRequest, setDataRequest] = useState(dataRequestInit)
@@ -50,23 +57,22 @@ function Food() {
 
     const thumbnailUrl = useRef()
 
-    async function loadFoods(query) {
-        try {
-            const res = await adminAPI.food.getAllWithPage(query)
-            setFoods(res.data.result)
-            setPaging(res.data.paging)
-        } catch (err) {
-            toast.error('Lỗi load danh sách')
-            console.log(err)
-        }
-    }
-
     useEffect(() => {
+        async function loadFoods() {
+            try {
+                const res = await adminAPI.food.getAllWithPage(query)
+                setFoods(res.data)
+            } catch (error) {
+                toast.error('Lỗi load danh sách')
+                console.log(error)
+            }
+        }
+
         ;(async function () {
             await loadFoods()
             setLoading(false)
         })()
-    }, [])
+    }, [query])
 
     const handleFormInputChange = (e) => {
         const { name, value, type, checked, files, valueAsNumber } = e.target
@@ -93,12 +99,13 @@ function Food() {
         try {
             const res = await adminAPI.food.create(dataRequest)
             toast.success('Thêm mới thành công')
-            // loadFoods(paging)
-            setFoods((prev) => [res.data, ...prev])
-            setPaging((prev) => ({ ...prev, totalItems: prev.totalItems + 1 }))
+            setFoods((prev) => ({
+                data: [res.data, ...prev.data],
+                page: { ...prev.page, totalItems: prev.page.totalItems + 1 },
+            }))
             setShowModalCreate(false)
         } catch (error) {
-            toast.error(error.response.data.message)
+            handleError(error)
         }
     }
 
@@ -112,10 +119,13 @@ function Food() {
         try {
             const res = await adminAPI.food.update(dataRequest.id, dataRequest)
             toast.success('Cập nhật thành công')
-            setFoods((prev) => prev.map((food) => (food.id === res.data.id ? res.data : food)))
+            setFoods((prev) => ({
+                ...prev,
+                data: prev.data.map((food) => (food.id === res.data.id ? res.data : food)),
+            }))
             setShowModalUpdate(false)
         } catch (error) {
-            toast.error(error.response.data.message)
+            handleError(error)
         }
     }
 
@@ -123,14 +133,48 @@ function Food() {
         try {
             await adminAPI.food.delete(selectedId)
             toast.success('Xoá thành công')
-            // loadFoods(paging)
-            setFoods((prev) => prev.filter((food) => !selectedId.includes(food.id)))
-            setPaging((prev) => ({ ...prev, totalItems: prev.totalItems - selectedId.length }))
+            setFoods((prev) => ({
+                data: prev.data.filter((food) => !selectedId.includes(food.id)),
+                page: { ...prev.page, totalItems: prev.page.totalItems - selectedId.length },
+            }))
             setSelectedId([])
             setShowModalDelete(false)
         } catch (error) {
             toast.error('Lỗi xoá đồ ăn')
         }
+    }
+
+    const renderTableHeader = (text, property) => {
+        let Icon,
+            newDirection = 'ASC'
+        const { property: currentProperty, direction: currentDirection } = foods.page
+        if (property === currentProperty) {
+            if (currentDirection === 'ASC') {
+                Icon = TiArrowSortedUp
+                newDirection = 'DESC'
+            } else {
+                Icon = TiArrowSortedDown
+            }
+        } else {
+            Icon = Fragment
+        }
+
+        return (
+            <th>
+                <button
+                    onClick={(e) =>
+                        setQuery((prev) => ({ ...prev, page: 1, property: property, direction: newDirection }))
+                    }
+                >
+                    <div className="flex items-center hover:opacity-80">
+                        {text}
+                        <div className="w-4">
+                            <Icon />
+                        </div>
+                    </div>
+                </button>
+            </th>
+        )
     }
 
     return isLoading ? (
@@ -161,18 +205,26 @@ function Food() {
                     </button>
                 </div>
                 <div className="mb-3">
-                    <select
-                        className="mr-2 border rounded outline-none"
-                        value={paging.size}
-                        onChange={(e) => loadFoods({ ...paging, page: 1, size: e.target.value })}
-                    >
-                        <option value="2">2</option>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                        {paging.totalItems > 20 && <option value={paging.totalItems}>Tất cả</option>}
-                    </select>
-                    dòng / trang
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <select
+                                className="mr-2 border rounded outline-none"
+                                value={foods.page.size}
+                                onChange={(e) => setQuery((prev) => ({ ...prev, page: 1, size: e.target.value }))}
+                            >
+                                <option value="2">2</option>
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                {foods.page.totalItems > 20 && <option value={foods.page.totalItems}>Tất cả</option>}
+                            </select>
+                            <span>dòng / trang</span>
+                        </div>
+                        <InputDelay
+                            className="flex px-3 py-1 items-center border rounded-full focus-within:border-blue-primary"
+                            onAfterDelay={(value) => setQuery((prev) => ({ ...prev, page: 1, q: value }))}
+                        />
+                    </div>
                 </div>
                 <table className="table-custom">
                     <thead>
@@ -188,16 +240,16 @@ function Food() {
                                     }}
                                 />
                             </th>
-                            <th>#</th>
-                            <th>Tên</th>
-                            <th>Mô tả</th>
-                            <th>Giá</th>
-                            <th>Kích hoạt</th>
+                            {renderTableHeader('#', 'id')}
+                            {renderTableHeader('Tên', 'name')}
+                            {renderTableHeader('Mô tả', 'description')}
+                            {renderTableHeader('Giá', 'price')}
+                            {renderTableHeader('Kích hoạt', 'active')}
                             <th className="w-1"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {foods.map((food) => (
+                        {foods.data.map((food) => (
                             <tr key={food.id}>
                                 <td>
                                     <input
@@ -212,7 +264,7 @@ function Food() {
                                 <td>{food.id}</td>
                                 <td>{food.name}</td>
                                 <td>{food.description}</td>
-                                <td>{food.price.toLocaleString('vi-vn', { style: 'currency', currency: 'VND' })}</td>
+                                <td>{currencyUtil.format(food.price)}</td>
                                 <td>
                                     {food.active ? (
                                         <span className="text-xs rounded text-white p-1 bg-green-primary">
@@ -254,16 +306,16 @@ function Food() {
                 </table>
                 <div className="flex justify-between mt-2">
                     <p>
-                        Hiển thị <span className="text-blue-primary">{foods.length}</span> / tổng số{' '}
-                        <span className="text-blue-primary">{paging.totalItems}</span>
+                        Hiển thị <span className="text-blue-primary">{foods.data.length}</span> / tổng số{' '}
+                        <span className="text-blue-primary">{foods.page.totalItems}</span>
                     </p>
-                    {paging.totalPages > 1 && (
+                    {foods.page.totalPages > 1 && (
                         <Pagination
-                            currentPage={paging.page}
-                            totalPage={paging.totalPages}
-                            onPageClick={(page) => {
-                                loadFoods({ ...paging, page })
-                            }}
+                            className="flex gap-1"
+                            buttonClassName="py-1 px-3 rounded enabled:hover:bg-gray-primary aria-[current]:bg-blue-primary aria-[current]:text-white"
+                            currentPage={foods.page.page}
+                            totalPage={foods.page.totalPages}
+                            onPageClick={(page) => setQuery((prev) => ({ ...prev, page }))}
                         />
                     )}
                 </div>
@@ -300,7 +352,7 @@ function Food() {
                                 <label>
                                     Tên
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="name"
                                         value={dataRequest.name}
@@ -314,9 +366,9 @@ function Food() {
                             <div className="mb-3">
                                 <label>
                                     Mô tả
-                                    <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
-                                        type="text"
+                                    <textarea
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
+                                        rows={3}
                                         name="description"
                                         value={dataRequest.description}
                                         onChange={handleFormInputChange}
@@ -331,7 +383,7 @@ function Food() {
                                 <label>
                                     Giá
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="number"
                                         name="price"
                                         min={0}
@@ -398,7 +450,7 @@ function Food() {
                                 <label>
                                     Tên
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="name"
                                         value={dataRequest.name}
@@ -412,9 +464,9 @@ function Food() {
                             <div className="mb-3">
                                 <label>
                                     Mô tả
-                                    <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
-                                        type="text"
+                                    <textarea
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
+                                        rows={3}
                                         name="description"
                                         value={dataRequest.description}
                                         onChange={handleFormInputChange}
@@ -429,7 +481,7 @@ function Food() {
                                 <label>
                                     Giá
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="number"
                                         name="price"
                                         min={0}

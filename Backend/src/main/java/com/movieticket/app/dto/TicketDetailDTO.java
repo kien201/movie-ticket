@@ -8,5 +8,4 @@ public class TicketDetailDTO extends BaseDTO {
 	private Long seatId;
 	private Long foodId;
 	private int quantity;
-	private int price;
 }

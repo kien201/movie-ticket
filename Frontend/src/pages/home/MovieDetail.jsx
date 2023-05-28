@@ -5,8 +5,12 @@ import webAPI from '../../api/webAPI'
 import Image from '../../components/Image'
 import dateUtil from '../../utils/dateUtil'
 import BookTicketModal from './BookTicketModal'
+import { useAuth } from '../../contexts/AuthContext'
+import { toast } from 'react-toastify'
+import { handleError } from '../../api/axiosConfig'
 
 function MovieDetail() {
+    const { currentUser } = useAuth()
     const { slug } = useParams()
 
     const [loading, setLoading] = useState(true)
@@ -14,7 +18,7 @@ function MovieDetail() {
     const [cinemasWithShowtime, setCinemasWithShowtime] = useState([])
 
     const datePickers = useMemo(
-        () => Array.from({ length: 30 }, (value, index) => new Date(Date.now() + 86400000 * index)),
+        () => Array.from({ length: 30 }, (value, index) => dateUtil.add(Date.now(), index, dateUtil.addType.DAYS)),
         []
     )
     const [selectedDate, setSelectedDate] = useState(datePickers[0])
@@ -23,9 +27,13 @@ function MovieDetail() {
 
     useEffect(() => {
         async function loadMovie() {
-            const res = await webAPI.movie.getOne(slug)
-            setMovie(res.data)
-            setLoading(false)
+            try {
+                const res = await webAPI.movie.getOne(slug)
+                setMovie(res.data)
+                setLoading(false)
+            } catch (error) {
+                handleError(error)
+            }
         }
         loadMovie()
     }, [slug])
@@ -37,7 +45,7 @@ function MovieDetail() {
                     movie.id,
                     dateUtil.format(selectedDate, dateUtil.INPUT_DATE_FORMAT)
                 )
-                const showtimes = res.data
+                const showtimes = res.data.filter((showtime) => new Date(showtime.startTime) > new Date())
 
                 const cinemas = showtimes.reduce((prev, showtime, index, self) => {
                     const cinema = showtime.room.cinema
@@ -84,7 +92,7 @@ function MovieDetail() {
                         {movie.premiere && (
                             <tr>
                                 <td className="text-black-secondary">Khởi chiếu</td>
-                                <td>{dateUtil.format(new Date(movie.premiere), dateUtil.DATE_FORMAT)}</td>
+                                <td>{dateUtil.format(movie.premiere, dateUtil.DATE_FORMAT)}</td>
                             </tr>
                         )}
                         <tr>
@@ -97,39 +105,45 @@ function MovieDetail() {
             <div className="w-full md:w-4/5 md:pl-5">
                 <h1 className="text-lg font-bold">Chọn lịch chiếu</h1>
                 <hr />
-                <div className="flex overflow-x-auto gap-2 pb-2 mb-3">
+                <div className="flex overflow-x-auto gap-2 pb-2 mb-3 snap-x">
                     {datePickers.map((date, index) => (
                         <button
                             key={index}
-                            className="rounded border p-2 aria-selected:border-blue-primary"
+                            className="snap-start rounded border p-2 aria-selected:border-blue-primary"
                             onClick={(e) => setSelectedDate(date)}
                             role="tab"
                             aria-selected={selectedDate === date}
                         >
-                            <h1 className="font-bold text-3xl">{date.getDate()}</h1>
+                            <h1 className="font-bold text-3xl">{dateUtil.pad(date.getDate())}</h1>
                             <p className="text-sm">{dateUtil.format(date, 'MM/yyyy')}</p>
                         </button>
                     ))}
                 </div>
-                {cinemasWithShowtime.map((cinema) => (
-                    <div key={cinema.id} className="mb-3">
-                        <h1 className="text-lg font-semibold">{cinema.name}</h1>
-                        <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-2">
-                            {cinema.showtimes.map((showtime) => (
-                                <button
-                                    key={showtime.id}
-                                    className="p-2 rounded bg-green-primary text-white hover:bg-opacity-80"
-                                    onClick={(e) => {
-                                        setSelectedShowtime(showtime)
-                                        setShowModalBookTicket(true)
-                                    }}
-                                >
-                                    {dateUtil.format(new Date(showtime.startTime), dateUtil.TIME_FORMAT)}
-                                </button>
-                            ))}
+                {cinemasWithShowtime.length > 0 ? (
+                    cinemasWithShowtime.map((cinema) => (
+                        <div key={cinema.id} className="mb-3">
+                            <h1 className="text-lg font-semibold">{cinema.name}</h1>
+                            <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-2">
+                                {cinema.showtimes.map((showtime) => (
+                                    <button
+                                        key={showtime.id}
+                                        className="p-2 rounded bg-green-primary text-white transition-colors hover:bg-opacity-80"
+                                        onClick={(e) => {
+                                            if (currentUser) {
+                                                setSelectedShowtime(showtime)
+                                                setShowModalBookTicket(true)
+                                            } else toast.error('Bạn chưa đăng nhập')
+                                        }}
+                                    >
+                                        {dateUtil.format(showtime.startTime, dateUtil.TIME_FORMAT)}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))
+                ) : (
+                    <p>Chưa có lịch chiếu</p>
+                )}
             </div>
             {showModalBookTicket && (
                 <BookTicketModal showtime={selectedShowtime} setShowModal={setShowModalBookTicket} />

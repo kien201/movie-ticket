@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.movieticket.app.constants.RoleName;
 import com.movieticket.app.dto.FoodDTO;
-import com.movieticket.app.dto.Paging;
-import com.movieticket.app.dto.ResultWithPaging;
+import com.movieticket.app.dto.PageDTO;
+import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.entity.FoodEntity;
 import com.movieticket.app.service.IFoodService;
 
@@ -36,8 +36,8 @@ public class FoodAPI {
 	}
 	
 	@GetMapping("page")
-	ResultWithPaging<FoodEntity> getAll(Paging paging) {
-		return foodService.findAll(paging);
+	PageDTO<FoodEntity> getAll(QueryFilter filter) {
+		return foodService.findAll(filter);
 	}
 	
 	@GetMapping("{id}")

@@ -8,7 +8,9 @@ import Modal from '../../../components/Modal'
 import Dropdown from '../../../components/Dropdown'
 import adminAPI from '../../../api/adminAPI'
 import arrayUtil from '../../../utils/arrayUtil'
+import currencyUtil from '../../../utils/currencyUtil'
 import { validateField, validateObject } from '../../../utils/validateUtil'
+import { handleError } from '../../../api/axiosConfig'
 
 const dataRequestInit = {
     id: '',
@@ -42,9 +44,9 @@ function SeatType({ onSeatTypeChange }) {
             try {
                 const res = await adminAPI.seatType.getAll()
                 setSeatTypes(res.data)
-            } catch (err) {
+            } catch (error) {
                 toast.error('Lỗi load danh sách')
-                console.log(err)
+                console.log(error)
             }
         }
 
@@ -82,7 +84,7 @@ function SeatType({ onSeatTypeChange }) {
             setSeatTypes((prev) => [res.data, ...prev])
             setShowModalCreate(false)
         } catch (error) {
-            toast.error(error.response.data.message)
+            handleError(error)
         }
     }
 
@@ -99,7 +101,7 @@ function SeatType({ onSeatTypeChange }) {
             setSeatTypes((prev) => prev.map((seatType) => (seatType.id === res.data.id ? res.data : seatType)))
             setShowModalUpdate(false)
         } catch (error) {
-            toast.error(error.response.data.message)
+            handleError(error)
         }
     }
 
@@ -185,9 +187,7 @@ function SeatType({ onSeatTypeChange }) {
                                         style={{ borderColor: seatType.color }}
                                     ></div>
                                 </td>
-                                <td>
-                                    {seatType.price.toLocaleString('vi-vn', { style: 'currency', currency: 'VND' })}
-                                </td>
+                                <td>{currencyUtil.format(seatType.price)}</td>
                                 <td>
                                     {seatType.active ? (
                                         <span className="text-xs rounded text-white p-1 bg-green-primary">
@@ -239,7 +239,7 @@ function SeatType({ onSeatTypeChange }) {
                                 <label>
                                     Tên
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="name"
                                         value={dataRequest.name}
@@ -254,7 +254,7 @@ function SeatType({ onSeatTypeChange }) {
                                 <label>
                                     <span className="mr-2">Màu</span>
                                     <input
-                                        className="rounded-md focus:outline outline-1 outline-blue-primary"
+                                        className="rounded-md focus:outline outline-blue-primary"
                                         type="color"
                                         name="color"
                                         value={dataRequest.color}
@@ -266,7 +266,7 @@ function SeatType({ onSeatTypeChange }) {
                                 <label>
                                     Giá
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="number"
                                         name="price"
                                         min={0}
@@ -312,7 +312,7 @@ function SeatType({ onSeatTypeChange }) {
                                 <label>
                                     Tên
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="name"
                                         value={dataRequest.name}
@@ -327,7 +327,7 @@ function SeatType({ onSeatTypeChange }) {
                                 <label>
                                     <span className="mr-2">Màu</span>
                                     <input
-                                        className="rounded-md focus:outline outline-1 outline-blue-primary"
+                                        className="rounded-md focus:outline outline-blue-primary"
                                         type="color"
                                         name="color"
                                         value={dataRequest.color}
@@ -339,7 +339,7 @@ function SeatType({ onSeatTypeChange }) {
                                 <label>
                                     Giá
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="number"
                                         name="price"
                                         min={0}

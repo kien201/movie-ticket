@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css'
 
 import { AuthProvider } from './contexts/AuthContext'
 import CheckRole, { RoleName } from './components/CheckRole'
-import { AdminLayout, HomeLayout } from './layouts'
+import { AdminLayout, HomeLayout, ProfileLayout } from './layouts'
 import {
     Home,
     Login,
@@ -18,6 +18,14 @@ import {
     RoomManage,
     SeatManage,
     ShowtimeManage,
+    VnPayReturn,
+    TicketManage,
+    Cinema,
+    Profile,
+    Ticket,
+    PrintTicket,
+    Register,
+    ChangePass,
 } from './pages'
 
 const router = createBrowserRouter([
@@ -28,7 +36,7 @@ const router = createBrowserRouter([
             { index: true, element: <Home /> },
             { path: 'movie', element: <Movie /> },
             { path: 'movie/:slug', element: <MovieDetail /> },
-            { path: 'cinema', element: <Home /> },
+            { path: 'cinema', element: <Cinema /> },
             { path: '*', element: <Navigate to="/" replace /> },
         ],
     },
@@ -90,7 +98,7 @@ const router = createBrowserRouter([
                 path: 'ticket',
                 element: (
                     <CheckRole roles={[RoleName.MANAGE_TICKET]}>
-                        <Dashboard />
+                        <TicketManage />
                     </CheckRole>
                 ),
             },
@@ -104,9 +112,22 @@ const router = createBrowserRouter([
                 <HomeLayout />
             </CheckRole>
         ),
-        children: [{ path: '*', element: <Navigate to="/profile" replace /> }],
+        children: [
+            {
+                element: <ProfileLayout />,
+                children: [
+                    { index: true, element: <Profile /> },
+                    { path: 'ticket', element: <Ticket /> },
+                    { path: 'change-pass', element: <ChangePass /> },
+                ],
+            },
+            { path: 'vnpay_return', element: <VnPayReturn /> },
+            { path: '*', element: <Navigate to="/profile" replace /> },
+        ],
     },
     { path: 'login', element: <Login /> },
+    { path: 'register', element: <Register /> },
+    { path: 'print-ticket', element: <PrintTicket /> },
     { path: '*', element: <Navigate to="/" replace /> },
 ])
 

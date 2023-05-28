@@ -10,7 +10,6 @@ public interface IShowtimeService {
 	List<ShowtimeEntity> findAll();
 	
 	List<ShowtimeEntity> findByMovieIdAndStartTime(Long movieId, LocalDate startTime);
-	
 	List<ShowtimeEntity> findByCinemaIdAndStartTime(Long cinemaId, LocalDate startTime);
 	
 	ShowtimeEntity findOne(Long id);

@@ -8,9 +8,11 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import lombok.AccessLevel;
+import org.hibernate.annotations.Formula;
+
+import com.movieticket.app.constants.TicketStatus;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,15 +27,13 @@ public class TicketEntity extends BaseEntity {
 	@ManyToOne
 	private ShowtimeEntity showtime;
 	
-	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<TicketDetailEntity> ticketDetails = new HashSet<>();
-	
-	@Transient
-	@Setter(AccessLevel.NONE)
-	private int totalPrice;
+	private String note;
 
-	public void setTotalPrice() {
-		this.totalPrice = ticketDetails.stream()
-								.reduce(0, (total, ticketDetail)->total += ticketDetail.getQuantity() * ticketDetail.getPrice(), Integer::sum);
-	}
+	private int status = TicketStatus.UNPAID;
+	
+	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<TicketDetailEntity> details = new HashSet<>();
+	
+	@Formula("(select sum(d.quantity * d.price) from ticketdetail d where d.ticket_id = id)")
+	private long totalPrice;
 }

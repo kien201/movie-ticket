@@ -17,7 +17,7 @@ function Header({ className, handleShowSidebar }) {
     }
 
     return (
-        <header className={`sticky z-10 top-0 inset-x-0 bg-white flex ${className}`}>
+        <header className={`sticky z-30 top-0 inset-x-0 bg-white flex ${className}`}>
             <Link to="/admin" className="w-60 flex items-center justify-center">
                 <Logo />
             </Link>
@@ -35,7 +35,10 @@ function Header({ className, handleShowSidebar }) {
                         >
                             <h1 className="whitespace-nowrap px-3 py-1">Xin chào, {currentUser.fullname || 'user'}</h1>
                             <hr />
-                            <Link className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary">
+                            <Link
+                                to="/profile/ticket"
+                                className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                            >
                                 Thông tin cá nhân
                             </Link>
                             <button

@@ -1,5 +1,4 @@
-package com.movieticket.app.config;
-//package app.config;
+//package com.movieticket.app.config;
 //
 //import java.io.File;
 //import java.nio.file.Files;
@@ -15,19 +14,15 @@ package com.movieticket.app.config;
 //import org.springframework.stereotype.Component;
 //import org.springframework.util.ResourceUtils;
 //
-//import app.constants.RoleName;
-//import app.dto.UserDTO;
-//import app.entity.RoleEntity;
-//import app.entity.UserEntity;
-//import app.repository.RoleRepository;
-//import app.service.UserService;
+//import com.movieticket.app.repository.MovieRepository;
+//import com.movieticket.app.repository.RoleRepository;
+//import com.movieticket.app.service.impl.UserService;
 //
 //@Component
 //public class InsertDB implements CommandLineRunner {
-//	@Autowired
-//	RoleRepository roleRepository;
-//	@Autowired
-//	UserService userService;
+//	@Autowired RoleRepository roleRepository;
+//	@Autowired UserService userService;
+//	@Autowired MovieRepository movie;
 //
 //	@Override
 //	public void run(String... args) throws Exception {

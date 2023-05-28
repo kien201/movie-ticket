@@ -30,6 +30,16 @@ public class SeatService implements ISeatService {
 		return seatRepository.findByRoomId(roomId);
 	}
 	
+	public List<SeatEntity> findAllWithOccupied(Long roomId, Long showtimeId){
+		List<SeatEntity> seats = seatRepository.findByRoomId(roomId);
+		List<SeatEntity> occupiedSeats = seatRepository.findOccupiedByShowtimeId(showtimeId);
+		seats.forEach(seat -> {
+			boolean isOccupied = occupiedSeats.stream().anyMatch(s -> s.getId() == seat.getId());
+			seat.setOccupied(isOccupied);
+		});
+		return seats;
+	}
+	
 	public SeatEntity findOne(Long id) {
 		return seatRepository.findById(id).orElseThrow(()-> new NoSuchElementException("Không tìm thấy ghế"));
 	}

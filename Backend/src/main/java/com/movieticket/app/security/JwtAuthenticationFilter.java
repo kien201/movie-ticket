@@ -58,6 +58,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		String token = JwtUtil.generateToken(authResult.getName());
 		Cookie cookie = new Cookie(AuthCookie.NAME, URLEncoder.encode(AuthCookie.TOKEN_PREFIX + token, "UTF-8"));
 		cookie.setHttpOnly(true);
+		cookie.setPath("/");
 		if (credentials.remember) cookie.setMaxAge(24*60*60);
 		response.addCookie(cookie);
 		

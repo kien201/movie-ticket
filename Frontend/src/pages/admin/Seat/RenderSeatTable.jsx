@@ -4,7 +4,7 @@ function getKey(row, col) {
     return `${row}, ${col}`
 }
 
-function RenderSeatTable({ seats, selectedSeat, onSeatClick }) {
+function RenderSeatTable({ seats, selectedSeat, onSeatClick = () => {} }) {
     const minRow = Math.min(...seats.map((seat) => seat.rowOrder))
     const maxRow = Math.max(...seats.map((seat) => seat.rowOrder))
     const minCol = Math.min(...seats.map((seat) => seat.columnOrder))

@@ -4,7 +4,7 @@ function getKey(row, col) {
     return `${row}, ${col}`
 }
 
-function RenderSeatTable({ seats, selectedSeat, onSeatClick }) {
+function RenderSeatTable({ seats, selectedIds = [], onSeatClick = () => {} }) {
     const minRow = Math.min(...seats.map((seat) => seat.rowOrder))
     const maxRow = Math.max(...seats.map((seat) => seat.rowOrder))
     const minCol = Math.min(...seats.map((seat) => seat.columnOrder))
@@ -24,28 +24,20 @@ function RenderSeatTable({ seats, selectedSeat, onSeatClick }) {
     return (
         <div className="overflow-x-auto">
             <table className="mx-auto border-separate border-spacing-1">
-                <thead>
-                    <tr>
-                        <th>Hàng \ Cột</th>
-                        {cols.map((col) => (
-                            <th key={col}>{col}</th>
-                        ))}
-                    </tr>
-                </thead>
                 <tbody>
                     {rows.map((row) => (
                         <tr key={row}>
-                            <th>{row}</th>
                             {cols.map((col) => {
                                 const seat = seatObj[getKey(row, col)]
                                 return (
                                     <td key={col}>
                                         {seat ? (
                                             <button
-                                                className="py-1 px-3 border-4 rounded aria-selected:bg-blue-secondary"
-                                                style={{ borderColor: seat.type.color }}
+                                                className="py-1 px-3 border-4 rounded aria-selected:bg-blue-secondary disabled:border-gray-primary disabled:bg-gray-primary"
+                                                style={{ borderColor: !seat.occupied && seat.type.color }}
                                                 onClick={(e) => onSeatClick(seat)}
-                                                aria-selected={selectedSeat?.id === seat.id}
+                                                aria-selected={selectedIds.includes(seat.id)}
+                                                disabled={seat.occupied}
                                             >
                                                 {seat.name}
                                             </button>

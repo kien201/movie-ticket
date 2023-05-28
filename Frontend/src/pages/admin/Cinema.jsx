@@ -8,6 +8,7 @@ import Dropdown from '../../components/Dropdown'
 import adminAPI from '../../api/adminAPI'
 import { validateField, validateObject } from '../../utils/validateUtil'
 import { Link } from 'react-router-dom'
+import { handleError } from '../../api/axiosConfig'
 
 const dataRequestInit = {
     id: '',
@@ -44,9 +45,9 @@ function Cinema() {
             try {
                 const res = await adminAPI.cinema.getAll()
                 setCinemas(res.data)
-            } catch (err) {
+            } catch (error) {
                 toast.error('Lỗi load danh sách')
-                console.log(err)
+                console.log(error)
             }
         }
 
@@ -79,7 +80,7 @@ function Cinema() {
             setCinemas((prev) => [res.data, ...prev])
             setShowModalCreate(false)
         } catch (error) {
-            toast.error(error.response.data.message)
+            handleError(error)
         }
     }
 
@@ -96,7 +97,7 @@ function Cinema() {
             setCinemas((prev) => prev.map((cinema) => (cinema.id === res.data.id ? res.data : cinema)))
             setShowModalUpdate(false)
         } catch (error) {
-            toast.error(error.response.data.message)
+            handleError(error)
         }
     }
 
@@ -189,7 +190,7 @@ function Cinema() {
                                 <label>
                                     Tên
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="name"
                                         value={dataRequest.name}
@@ -204,7 +205,7 @@ function Cinema() {
                                 <label>
                                     Mô tả
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="address"
                                         value={dataRequest.address}
@@ -249,7 +250,7 @@ function Cinema() {
                                 <label>
                                     Tên
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="name"
                                         value={dataRequest.name}
@@ -264,7 +265,7 @@ function Cinema() {
                                 <label>
                                     Mô tả
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="address"
                                         value={dataRequest.address}

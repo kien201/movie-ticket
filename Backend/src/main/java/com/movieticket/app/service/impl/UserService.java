@@ -8,15 +8,14 @@ import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.movieticket.app.dto.Paging;
-import com.movieticket.app.dto.ResultWithPaging;
+import com.movieticket.app.dto.PageDTO;
+import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.dto.UserDTO;
 import com.movieticket.app.entity.RoleEntity;
 import com.movieticket.app.entity.UserEntity;
@@ -31,14 +30,9 @@ public class UserService implements IUserService {
 	@Autowired UserRepository userRepository;
 	@Autowired RoleRepository roleRepository;
 
-	public ResultWithPaging<UserEntity> findAll(Paging paging){
-		ResultWithPaging<UserEntity> rs = new ResultWithPaging<>();
-		Page<UserEntity> page = userRepository.findAll(PageRequest.of(paging.getPage()-1, paging.getSize(), paging.getDirection(), paging.getProperty()));
-		rs.setResult(page.getContent());
-		paging.setTotalItems(page.getTotalElements());
-		paging.setTotalPages(page.getTotalPages());
-		rs.setPaging(paging);
-		return rs;
+	public PageDTO<UserEntity> findAll(QueryFilter filter){
+		Page<UserEntity> page = userRepository.findBySearchValueContains(filter.getQ(), filter.toPageable());
+		return PageDTO.from(page);
 	}
 	
 	public List<UserEntity> findAll(){
@@ -64,10 +58,10 @@ public class UserService implements IUserService {
 		return userRepository.save(user);
 	}
 	
-	public UserEntity update(Long id, UserDTO userInfo) {
+	public UserEntity update(Long id, UserDTO userInfo, boolean isUpdateRole) {
 		UserEntity user = findOne(id);
 		BeanUtils.copyProperties(userInfo, user, "password","username");
-		updateRoles(user, userInfo.getRoleNames());
+		if (isUpdateRole) updateRoles(user, userInfo.getRoleNames());
 		return user;
 	}
 	

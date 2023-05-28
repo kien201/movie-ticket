@@ -9,6 +9,8 @@ public interface ISeatService {
 	List<SeatEntity> findAll();
 
 	List<SeatEntity> findAll(Long roomId);
+
+	List<SeatEntity> findAllWithOccupied(Long roomId, Long showtimeId);
 	
 	SeatEntity findOne(Long id);
 	

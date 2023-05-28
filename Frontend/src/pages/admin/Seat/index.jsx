@@ -9,6 +9,7 @@ import adminAPI from '../../../api/adminAPI'
 import { validateField, validateObject } from '../../../utils/validateUtil'
 import { AiFillDelete, AiFillEdit } from 'react-icons/ai'
 import RenderSeatTable from './RenderSeatTable'
+import { handleError } from '../../../api/axiosConfig'
 
 const validateRules = [
     {
@@ -48,9 +49,9 @@ function Seat() {
             try {
                 const res = await adminAPI.room.getOne(roomId)
                 setRoom(res.data)
-            } catch (err) {
+            } catch (error) {
                 toast.error('Lỗi load danh sách')
-                console.log(err)
+                console.log(error)
             }
         }
 
@@ -58,9 +59,9 @@ function Seat() {
             try {
                 const res = await adminAPI.seat.getAll({ roomId })
                 setSeats(res.data)
-            } catch (err) {
+            } catch (error) {
                 toast.error('Lỗi load danh sách')
-                console.log(err)
+                console.log(error)
             }
         }
 
@@ -94,7 +95,7 @@ function Seat() {
             setSeats((prev) => [res.data, ...prev])
             setShowModalCreate(false)
         } catch (error) {
-            toast.error(error.response.data.message)
+            handleError(error)
         }
     }
 
@@ -111,7 +112,7 @@ function Seat() {
             setSeats((prev) => prev.map((seat) => (seat.id === res.data.id ? res.data : seat)))
             setShowModalUpdate(false)
         } catch (error) {
-            toast.error(error.response.data.message)
+            handleError(error)
         }
     }
 
@@ -199,7 +200,7 @@ function Seat() {
                                 <label>
                                     Tên
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="name"
                                         value={dataRequest.name}
@@ -214,7 +215,7 @@ function Seat() {
                                 <label>
                                     Hàng
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="number"
                                         min={0}
                                         name="rowOrder"
@@ -229,7 +230,7 @@ function Seat() {
                                 <label>
                                     Cột
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="number"
                                         min={0}
                                         name="columnOrder"
@@ -246,7 +247,7 @@ function Seat() {
                                 <label>
                                     Loại ghế
                                     <select
-                                        className="border rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         name="typeId"
                                         value={dataRequest.typeId}
                                         onChange={handleFormInputChange}
@@ -294,7 +295,7 @@ function Seat() {
                                 <label>
                                     Tên
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
                                         name="name"
                                         value={dataRequest.name}
@@ -309,7 +310,7 @@ function Seat() {
                                 <label>
                                     Hàng
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="number"
                                         min={0}
                                         name="rowOrder"
@@ -324,7 +325,7 @@ function Seat() {
                                 <label>
                                     Cột
                                     <input
-                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="number"
                                         min={0}
                                         name="columnOrder"
@@ -341,7 +342,7 @@ function Seat() {
                                 <label>
                                     Loại ghế
                                     <select
-                                        className="border rounded-md px-3 py-2 w-full focus:outline outline-1 outline-blue-primary"
+                                        className="border rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         name="typeId"
                                         value={dataRequest.typeId}
                                         onChange={handleFormInputChange}

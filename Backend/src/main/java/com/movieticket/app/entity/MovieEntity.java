@@ -10,10 +10,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Formula;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import com.movieticket.app.utils.SlugUtil;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,6 +46,12 @@ public class MovieEntity extends BaseEntity {
 	@OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private Set<ShowtimeEntity> showtimes = new HashSet<>();
+	
+	@Formula("concat(name,description,director,actor,genre,premiere,duration)")
+	private String searchValue;
+	
+	@Transient
+	private long ticketCount;
 	
 	@PrePersist
 	@PreUpdate

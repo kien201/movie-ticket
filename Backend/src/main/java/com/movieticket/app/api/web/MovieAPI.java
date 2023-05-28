@@ -9,10 +9,11 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.movieticket.app.dto.Paging;
-import com.movieticket.app.dto.ResultWithPaging;
+import com.movieticket.app.dto.PageDTO;
+import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.entity.MovieEntity;
 import com.movieticket.app.entity.ShowtimeEntity;
 import com.movieticket.app.service.IMovieService;
@@ -25,8 +26,13 @@ public class MovieAPI {
 	@Autowired IShowtimeService showtimeService;
 	
 	@GetMapping
-	ResultWithPaging<MovieEntity> getAll(Paging paging) {
-		return movieService.findAll(paging);
+	PageDTO<MovieEntity> getAll(QueryFilter filter, @RequestParam(defaultValue = "current") String movieType) {
+		return movieService.findAll(filter, movieType);
+	}
+	
+	@GetMapping("top")
+	List<MovieEntity> getTop3Movies() {
+		return movieService.findTop3ByOrderByTicketCount();
 	}
 	
 	@GetMapping("{slug}")

@@ -15,12 +15,19 @@ const publicAPI = getAxios()
 
 const privateAPI = getAxios()
 privateAPI.interceptors.response.use(null, (err) => {
-    if (err.response.status === 401) {
-        toast.error('Đã hết phiên đăng nhập')
-    } else if (err.response.status === 403) {
-        toast.error('Bạn không có đủ quyền để thực hiện hành động này')
+    const status = err.response.status
+    if (status === 401 || status === 403) {
+        if (err.response.status === 401) toast.error('Bạn chưa đăng nhập')
+        else if (err.response.status === 403) toast.error('Bạn không có đủ quyền để thực hiện hành động này')
+        return Promise.reject('nevermind')
     }
     return Promise.reject(err)
 })
 
-export { publicAPI, privateAPI }
+function handleError(error) {
+    if (error === 'nevermind') return
+    toast.error(error.response.data.message)
+    console.log(error)
+}
+
+export { publicAPI, privateAPI, handleError }

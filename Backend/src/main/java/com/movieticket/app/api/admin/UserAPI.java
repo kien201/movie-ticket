@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.movieticket.app.constants.RoleName;
-import com.movieticket.app.dto.Paging;
-import com.movieticket.app.dto.ResultWithPaging;
+import com.movieticket.app.dto.PageDTO;
+import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.dto.UserDTO;
 import com.movieticket.app.entity.UserEntity;
 import com.movieticket.app.service.IUserService;
@@ -33,8 +33,8 @@ public class UserAPI {
 	}
 	
 	@GetMapping("page")
-	ResultWithPaging<UserEntity> getAll(Paging paging) {
-		return userService.findAll(paging);
+	PageDTO<UserEntity> getAll(QueryFilter filter) {
+		return userService.findAll(filter);
 	}
 	
 	@GetMapping("{id}")
@@ -52,7 +52,7 @@ public class UserAPI {
 	@PutMapping("{id}")
 	@PreAuthorize("hasAuthority('"+RoleName.MANAGE_USER+"')")
 	UserEntity update(@PathVariable Long id, @RequestBody UserDTO userInfo) {
-		return userService.update(id, userInfo);
+		return userService.update(id, userInfo, true);
 	}
 	
 	@PutMapping("{id}/changepassword")

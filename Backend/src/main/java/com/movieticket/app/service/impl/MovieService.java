@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.movieticket.app.constants.Common;
 import com.movieticket.app.dto.MovieDTO;
-import com.movieticket.app.dto.Paging;
-import com.movieticket.app.dto.ResultWithPaging;
+import com.movieticket.app.dto.PageDTO;
+import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.entity.MovieEntity;
 import com.movieticket.app.repository.MovieRepository;
 import com.movieticket.app.service.IMovieService;
@@ -26,19 +26,23 @@ import com.movieticket.app.utils.UploadUtil;
 @Transactional
 public class MovieService implements IMovieService {
 	@Autowired MovieRepository movieRepository;
-
-	public ResultWithPaging<MovieEntity> findAll(Paging paging){
-		ResultWithPaging<MovieEntity> rs = new ResultWithPaging<>();
-		Page<MovieEntity> page = movieRepository.findAll(PageRequest.of(paging.getPage()-1, paging.getSize(), paging.getDirection(), paging.getProperty()));
-		rs.setResult(page.getContent());
-		paging.setTotalItems(page.getTotalElements());
-		paging.setTotalPages(page.getTotalPages());
-		rs.setPaging(paging);
-		return rs;
-	}
 	
 	public List<MovieEntity> findAll(){
 		return movieRepository.findAll(Sort.by(Direction.DESC, "id"));
+	}
+	
+	public List<MovieEntity> findTop3ByOrderByTicketCount(){
+		return movieRepository.findByOrderByTicketCountDesc(PageRequest.of(0, 3));
+	}
+
+	public PageDTO<MovieEntity> findAll(QueryFilter filter){
+		Page<MovieEntity> page = movieRepository.findBySearchValueContains(filter.getQ(), filter.toPageable());
+		return PageDTO.from(page);
+	}
+	
+	public PageDTO<MovieEntity> findAll(QueryFilter filter, String movieType){
+		Page<MovieEntity> page = movieRepository.findBySearchValueContainsAndMovieTypeAndActiveTrue(filter.getQ(), movieType, filter.toPageable());
+		return PageDTO.from(page);
 	}
 	
 	public MovieEntity findOne(Long id) {

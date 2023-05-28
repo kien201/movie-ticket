@@ -37,5 +37,5 @@ public class SeatEntity extends BaseEntity {
 	private Set<TicketDetailEntity> ticketDetails = new HashSet<>();
 	
 	@Transient
-	private int isOccupied;
+	private boolean isOccupied;
 }

@@ -2,13 +2,13 @@ package com.movieticket.app.service;
 
 import java.util.List;
 
-import com.movieticket.app.dto.Paging;
-import com.movieticket.app.dto.ResultWithPaging;
+import com.movieticket.app.dto.PageDTO;
+import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.dto.UserDTO;
 import com.movieticket.app.entity.UserEntity;
 
 public interface IUserService {
-	ResultWithPaging<UserEntity> findAll(Paging paging);
+	PageDTO<UserEntity> findAll(QueryFilter filter);
 	
 	List<UserEntity> findAll();
 	
@@ -18,7 +18,7 @@ public interface IUserService {
 	
 	UserEntity create(UserDTO userInfo);
 	
-	UserEntity update(Long id, UserDTO userInfo);
+	UserEntity update(Long id, UserDTO userInfo, boolean isUpdateRole);
 	
 	int changePassword(Long id, String newPassword);
 	
