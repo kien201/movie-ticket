@@ -27,12 +27,7 @@ public class MovieAPI {
 	
 	@GetMapping
 	PageDTO<MovieEntity> getAll(QueryFilter filter, @RequestParam(defaultValue = "current") String movieType) {
-		return movieService.findAll(filter, movieType);
-	}
-	
-	@GetMapping("top")
-	List<MovieEntity> getTop3Movies() {
-		return movieService.findTop3ByOrderByTicketCount();
+		return movieService.findByMovieTypeAndActiveTrue(filter, movieType);
 	}
 	
 	@GetMapping("{slug}")
@@ -42,6 +37,6 @@ public class MovieAPI {
 	
 	@GetMapping("{movieId}/showtime")
 	List<ShowtimeEntity> findByCinemaIdAndStartTime(@PathVariable Long movieId, @DateTimeFormat(iso = ISO.DATE) LocalDate startTime){
-		return showtimeService.findByMovieIdAndStartTime(movieId, startTime);
+		return showtimeService.findByMovieIdAndStartTimeAndActiveTrue(movieId, startTime);
 	}
 }

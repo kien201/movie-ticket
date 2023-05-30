@@ -38,6 +38,14 @@ public class ShowtimeService implements IShowtimeService {
 		return showtimeRepository.findByCinemaIdAndStartTime(cinemaId, startTime, Sort.by(Direction.ASC, "startTime"));
 	}
 	
+	public List<ShowtimeEntity> findByMovieIdAndStartTimeAndActiveTrue(Long movieId, LocalDate startTime){
+		return showtimeRepository.findByMovieIdAndStartTimeAndActiveTrue(movieId, startTime, Sort.by(Direction.ASC, "startTime"));
+	}
+	
+	public List<ShowtimeEntity> findByCinemaIdAndStartTimeAndActiveTrue(Long cinemaId, LocalDate startTime){
+		return showtimeRepository.findByCinemaIdAndStartTimeAndActiveTrue(cinemaId, startTime, Sort.by(Direction.ASC, "startTime"));
+	}
+	
 	public ShowtimeEntity findOne(Long id) {
 		return showtimeRepository.findById(id).orElseThrow(()-> new NoSuchElementException("Không tìm thấy lịch chiếu"));
 	}

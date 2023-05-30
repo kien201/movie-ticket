@@ -13,7 +13,6 @@ function AuthProvider(props) {
 
     useEffect(() => {
         const isLogin = localStorageUtil.getItem('isLogin')
-
         if (isLoading) {
             if (isLogin === true) {
                 webAPI.profile

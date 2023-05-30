@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -27,6 +28,7 @@ public class TicketEntity extends BaseEntity {
 	@ManyToOne
 	private ShowtimeEntity showtime;
 	
+	@Column(columnDefinition = "TEXT")
 	private String note;
 
 	private int status = TicketStatus.UNPAID;

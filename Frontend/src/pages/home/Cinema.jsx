@@ -40,7 +40,7 @@ function Cinemas() {
     }, [])
 
     useEffect(() => {
-        if (selectedCinema.id) {
+        if (selectedCinema?.id) {
             async function loadMoviesWithShowtime() {
                 const res = await webAPI.cinema.getShowtime(
                     selectedCinema.id,
@@ -64,23 +64,31 @@ function Cinemas() {
     ) : (
         <div className="container-custom py-5">
             <div className="mb-3 grid grid-cols-2 md:grid-cols-5 gap-5">
-                {cinemas.map((cinema) => (
-                    <button
-                        key={cinema.id}
-                        className="p-3 rounded border text-center transition-colors hover:border-blue-primary aria-selected:text-blue-primary aria-selected:border-blue-primary"
-                        aria-selected={cinema.id === selectedCinema.id}
-                        onClick={(e) => setSelectedCinema(cinema)}
-                    >
-                        {cinema.name}
-                    </button>
-                ))}
+                {cinemas.length > 0 ? (
+                    cinemas.map((cinema) => (
+                        <button
+                            key={cinema.id}
+                            className="p-3 rounded border text-center transition-colors hover:border-blue-primary aria-selected:text-blue-primary aria-selected:border-blue-primary"
+                            aria-selected={cinema.id === selectedCinema.id}
+                            onClick={(e) => setSelectedCinema(cinema)}
+                        >
+                            {cinema.name}
+                        </button>
+                    ))
+                ) : (
+                    <p className="mb-3">Chưa có rạp</p>
+                )}
             </div>
             <hr />
-            <div className="mb-3">
-                <h1 className="text-lg font-semibold">{selectedCinema.name}</h1>
-                <p>Địa chỉ: {selectedCinema.address}</p>
-            </div>
-            <hr />
+            {selectedCinema && (
+                <>
+                    <div className="mb-3">
+                        <h1 className="text-lg font-semibold">{selectedCinema.name}</h1>
+                        <p>Địa chỉ: {selectedCinema.address}</p>
+                    </div>
+                    <hr />
+                </>
+            )}
             <div className="flex overflow-x-auto gap-2 pb-2 mb-3 snap-x">
                 {datePickers.map((date, index) => (
                     <button

@@ -23,8 +23,8 @@ public class VnPayConfig {
 	public static String vnp_Locale = "vn";
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_Returnurl = "http://localhost:3000/profile/vnpay_return";
-    public static String vnp_TmnCode = "V69S2M21";
-    public static String vnp_HashSecret = "COKUNJITEMTQNSTJREGSTELGXIOEYGLH";
+    public static String vnp_TmnCode = "";
+    public static String vnp_HashSecret = "";
     public static String vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
 
     public static String md5(String message) {

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { AiFillDelete } from 'react-icons/ai'
 import { IoMdAdd } from 'react-icons/io'
 import { BsThreeDotsVertical } from 'react-icons/bs'
@@ -194,6 +194,7 @@ function Movie() {
                         onClick={() => {
                             setDataRequest(dataRequestInit)
                             setErrors({})
+                            thumbnailUrl.current = undefined
                             setShowModalCreate(true)
                         }}
                     >
@@ -247,9 +248,6 @@ function Movie() {
                             </th>
                             {renderTableHeader('#', 'id')}
                             {renderTableHeader('Tên', 'name')}
-                            {renderTableHeader('Đạo diễn', 'director')}
-                            {renderTableHeader('Diễn viên', 'actor')}
-                            {renderTableHeader('Thể loại', 'genre')}
                             {renderTableHeader('Khởi chiếu', 'premiere')}
                             {renderTableHeader('Thời lượng', 'duration')}
                             {renderTableHeader('Kích hoạt', 'active')}
@@ -271,35 +269,33 @@ function Movie() {
                                 </td>
                                 <td>{movie.id}</td>
                                 <td>{movie.name}</td>
-                                <td>{movie.director}</td>
-                                <td>{movie.actor}</td>
-                                <td>{movie.genre}</td>
                                 <td>{dateUtil.format(movie.premiere, dateUtil.DATE_FORMAT)}</td>
                                 <td>{movie.duration} phút</td>
                                 <td>
                                     {movie.active ? (
-                                        <span className="text-xs rounded text-white p-1 bg-green-primary">
+                                        <span className="text-xs rounded text-white p-1 bg-green-primary whitespace-nowrap">
                                             Đã kích hoạt
                                         </span>
                                     ) : (
-                                        <span className="text-xs rounded text-white p-1 bg-red-secondary">
+                                        <span className="text-xs rounded text-white p-1 bg-red-secondary whitespace-nowrap">
                                             Chưa kích hoạt
                                         </span>
                                     )}
                                 </td>
                                 <td>
                                     <Dropdown
-                                        className="p-2 rounded-full hover:bg-gray-primary"
+                                        className="p-2 rounded-full hover:bg-gray-secondary"
                                         Menu={({ isShow }) => (
                                             <div
                                                 className="absolute bottom-full right-0 bg-white rounded shadow py-2"
                                                 hidden={!isShow}
                                             >
                                                 <button
-                                                    className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                                    className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                                                     onClick={() => {
                                                         setDataRequest(movie)
                                                         setErrors({})
+                                                        thumbnailUrl.current = webAPI.getUpload(movie.thumbnail)
                                                         setShowModalUpdate(true)
                                                     }}
                                                 >
@@ -323,7 +319,7 @@ function Movie() {
                     {movies.page.totalPages > 1 && (
                         <Pagination
                             className="flex gap-1"
-                            buttonClassName="py-1 px-3 rounded enabled:hover:bg-gray-primary aria-[current]:bg-blue-primary aria-[current]:text-white"
+                            buttonClassName="py-1 px-3 rounded enabled:hover:bg-gray-secondary aria-[current]:bg-blue-primary aria-[current]:text-white"
                             currentPage={movies.page.page}
                             totalPage={movies.page.totalPages}
                             onPageClick={(page) => setQuery((prev) => ({ ...prev, page }))}
@@ -342,10 +338,7 @@ function Movie() {
                                 <label className="block relative mx-auto w-40 rounded border overflow-hidden group cursor-pointer">
                                     <Image
                                         src={thumbnailUrl.current}
-                                        onLoad={(e) => {
-                                            thumbnailUrl.current = undefined
-                                            URL.revokeObjectURL(e.target.src)
-                                        }}
+                                        onLoad={(e) => URL.revokeObjectURL(e.target.src)}
                                     />
                                     <div className="absolute top-3/4 bottom-0 inset-0 flex items-center justify-center text-4xl text-blue-primary bg-blue-secondary opacity-60 group-hover:opacity-80">
                                         <MdOutlineFileUpload />
@@ -493,11 +486,8 @@ function Movie() {
                             <div className="mb-3">
                                 <label className="block relative mx-auto w-40 rounded border overflow-hidden group cursor-pointer">
                                     <Image
-                                        src={thumbnailUrl.current || webAPI.getUpload(dataRequest.thumbnail)}
-                                        onLoad={(e) => {
-                                            thumbnailUrl.current = undefined
-                                            URL.revokeObjectURL(e.target.src)
-                                        }}
+                                        src={thumbnailUrl.current}
+                                        onLoad={(e) => URL.revokeObjectURL(e.target.src)}
                                     />
                                     <div className="absolute top-3/4 bottom-0 inset-0 flex items-center justify-center text-4xl text-blue-primary bg-blue-secondary opacity-60 group-hover:opacity-80">
                                         <MdOutlineFileUpload />

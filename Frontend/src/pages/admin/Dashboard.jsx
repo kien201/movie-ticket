@@ -66,7 +66,7 @@ function Dashboard() {
                         </p>
                         <h1 className="text-2xl font-semibold">{tickets.length}</h1>
                     </div>
-                    <div className="rounded-lg p-2 bg-black-secondary text-white shadow drop-shadow">
+                    <div className="rounded-lg p-2 bg-gray-primary text-white shadow drop-shadow">
                         <p className="inline-flex items-center gap-1 text-lg">
                             <RiMoneyEuroCircleLine /> <span>Doanh thu / vé</span>
                         </p>

@@ -6,7 +6,7 @@ import Logo from '../../components/Logo'
 
 function Footer() {
     return (
-        <footer className="bg-black-primary text-gray-secondary">
+        <footer className="bg-black-primary text-gray-third">
             <div className="container-custom py-10 flex gap-5 flex-col md:flex-row">
                 <div className="md:w-6/12">
                     <div className="mb-3">

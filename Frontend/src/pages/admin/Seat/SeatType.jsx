@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AiFillDelete } from 'react-icons/ai'
 import { IoMdAdd } from 'react-icons/io'
 import { BsThreeDotsVertical } from 'react-icons/bs'
@@ -190,25 +190,25 @@ function SeatType({ onSeatTypeChange }) {
                                 <td>{currencyUtil.format(seatType.price)}</td>
                                 <td>
                                     {seatType.active ? (
-                                        <span className="text-xs rounded text-white p-1 bg-green-primary">
+                                        <span className="text-xs rounded text-white p-1 bg-green-primary whitespace-nowrap">
                                             Đã kích hoạt
                                         </span>
                                     ) : (
-                                        <span className="text-xs rounded text-white p-1 bg-red-secondary">
+                                        <span className="text-xs rounded text-white p-1 bg-red-secondary whitespace-nowrap">
                                             Chưa kích hoạt
                                         </span>
                                     )}
                                 </td>
                                 <td>
                                     <Dropdown
-                                        className="p-2 rounded-full hover:bg-gray-primary"
+                                        className="p-2 rounded-full hover:bg-gray-secondary"
                                         Menu={({ isShow }) => (
                                             <div
                                                 className="absolute bottom-full right-0 bg-white rounded shadow py-2"
                                                 hidden={!isShow}
                                             >
                                                 <button
-                                                    className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                                    className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                                                     onClick={() => {
                                                         setDataRequest(seatType)
                                                         setErrors({})

@@ -16,7 +16,7 @@ function Movie() {
 
     useEffect(() => {
         async function loadMovies() {
-            const res = await webAPI.movie.getAllWithPage(query)
+            const res = await webAPI.movie.getAllWithPage({ ...query, size: 12 })
             setMovies(res.data)
         }
         loadMovies()
@@ -30,7 +30,10 @@ function Movie() {
                     <select
                         className="text-ellipsis border rounded-md px-3 py-2 focus:outline outline-blue-primary"
                         value={query.movieType || 'current'}
-                        onChange={(e) => setSearchParams({ ...query, movieType: e.target.value })}
+                        onChange={(e) => {
+                            delete query.page
+                            setSearchParams({ ...query, movieType: e.target.value })
+                        }}
                         autoFocus
                     >
                         <option value="current">Đang chiếu</option>
@@ -42,7 +45,12 @@ function Movie() {
             <div className="container-custom">
                 <div className="mb-3 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                     {movies.data.map((movie) => (
-                        <div key={movie.id} className="rounded-lg shadow-lg overflow-hidden">
+                        <div key={movie.id} className="relative rounded-lg shadow-lg overflow-hidden">
+                            {movie.showtimeCount === 0 && (
+                                <div className="absolute top-3 right-3 px-3 rounded-full bg-gray-primary text-white text-sm shadow drop-shadow pointer-events-none">
+                                    Chưa có lịch chiếu
+                                </div>
+                            )}
                             <Link to={`/movie/${movie.slug}`}>
                                 <Image src={webAPI.getUpload(movie.thumbnail)} className="w-full h-72 object-cover" />
                             </Link>
@@ -66,7 +74,7 @@ function Movie() {
                     <div className="mt-10 flex items-center justify-center">
                         <Pagination
                             className="flex gap-2"
-                            buttonClassName="py-1 px-3 rounded enabled:hover:bg-gray-primary aria-[current]:border-2 aria-[current]:border-blue-primary aria-[current]:text-blue-primary"
+                            buttonClassName="py-1 px-3 rounded enabled:hover:bg-gray-secondary aria-[current]:border-2 aria-[current]:border-blue-primary aria-[current]:text-blue-primary"
                             currentPage={movies.page.page}
                             totalPage={movies.page.totalPages}
                             onPageClick={(page) => setSearchParams({ ...query, page })}

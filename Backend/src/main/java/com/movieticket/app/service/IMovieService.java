@@ -10,9 +10,8 @@ import com.movieticket.app.entity.MovieEntity;
 
 public interface IMovieService {
 	List<MovieEntity> findAll();
-	List<MovieEntity> findTop3ByOrderByTicketCount();
 	PageDTO<MovieEntity> findAll(QueryFilter filter);
-	PageDTO<MovieEntity> findAll(QueryFilter filter, String type);
+	PageDTO<MovieEntity> findByMovieTypeAndActiveTrue(QueryFilter filter, String type);
 	
 	MovieEntity findOne(Long id);
 	

@@ -1,8 +1,13 @@
-import React, { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { AiFillDelete } from 'react-icons/ai'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { TiArrowSortedDown, TiArrowSortedUp } from 'react-icons/ti'
+import { IoTicket } from 'react-icons/io5'
+import { RiMoneyEuroCircleLine } from 'react-icons/ri'
+import { TbFileExport } from 'react-icons/tb'
+import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { CSVLink } from 'react-csv'
 
 import Modal from '../../components/Modal'
 import Dropdown from '../../components/Dropdown'
@@ -14,9 +19,6 @@ import Pagination from '../../components/Pagination'
 import { ticketStatus } from '../../constants/ticketStatus'
 import { handleError } from '../../api/axiosConfig'
 import InputDelay from '../../components/InputDelay'
-import { Link } from 'react-router-dom'
-import { RiMoneyEuroCircleLine } from 'react-icons/ri'
-import { IoTicket } from 'react-icons/io5'
 
 const dataRequestInit = {
     id: '',
@@ -140,13 +142,61 @@ function Ticket() {
     const renderTicketStatus = (status) => {
         switch (status) {
             case ticketStatus.PAYMENT_SUCCESS.value:
-                return <span className="text-xs rounded text-white p-1 bg-green-primary">Thành công</span>
+                return (
+                    <span className="text-xs rounded text-white p-1 bg-green-primary">
+                        {ticketStatus.PAYMENT_SUCCESS.text}
+                    </span>
+                )
             case ticketStatus.PAYMENT_FAILED.value:
-                return <span className="text-xs rounded text-white p-1 bg-red-secondary">Lỗi thanh toán</span>
+                return (
+                    <span className="text-xs rounded text-white p-1 bg-red-secondary">
+                        {ticketStatus.PAYMENT_FAILED.text}
+                    </span>
+                )
             default:
-                return <span className="text-xs rounded p-1 bg-gray-primary">Chưa thanh toán</span>
+                return <span className="text-xs rounded p-1 bg-gray-secondary">{ticketStatus.UNPAID.text}</span>
         }
     }
+
+    const renderCsvLink = () => (
+        <CSVLink
+            data={tickets.data.map((ticket) => ({
+                // fullname: ticket.user.fullname,
+                // email: ticket.user.email,
+                // phoneNumber: ticket.user.phoneNumber,
+                // createdDate: dateUtil.format(ticket.createdDate, dateUtil.DATETIME_FORMAT),
+                // cinemaName: ticket.showtime.room.cinema.name,
+                // movieName: ticket.showtime.movie.name,
+                ...ticket,
+                status: Object.values(ticketStatus).find((status) => ticket.status === status.value).text,
+                details: ticket.details
+                    .map(
+                        (detail) =>
+                            `${detail.seat?.name || detail.food?.name} x ${detail.quantity}: ${currencyUtil.format(
+                                detail.quantity * detail.price
+                            )}`
+                    )
+                    .join(', '),
+                // totalPrice: currencyUtil.format(ticket.totalPrice),
+            }))}
+            headers={[
+                { key: 'user.fullname', label: 'Tên khách hàng' },
+                { key: 'user.email', label: 'Email' },
+                { key: 'user.phoneNumber', label: 'Số điện thoại' },
+                { key: 'createdDate', label: 'Ngày đặt vé' },
+                { key: 'showtime.room.cinema.name', label: 'Tên rạp' },
+                { key: 'showtime.movie.name', label: 'Tên phim' },
+                { key: 'status', label: 'Trạng thái' },
+                { key: 'details', label: 'Chi tiết' },
+                { key: 'totalPrice', label: 'Thành tiền' },
+            ]}
+            filename="ticket.csv"
+            className="inline-flex gap-1 items-center py-1 px-3 rounded bg-green-primary text-white hover:opacity-80"
+        >
+            <TbFileExport />
+            Xuất file
+        </CSVLink>
+    )
 
     return isLoading ? (
         <></>
@@ -196,7 +246,7 @@ function Ticket() {
                         </p>
                         <h1 className="text-2xl font-semibold">{activeTickets.length}</h1>
                     </div>
-                    <div className="rounded-lg p-2 bg-black-secondary text-white shadow drop-shadow">
+                    <div className="rounded-lg p-2 bg-gray-primary text-white shadow drop-shadow">
                         <p className="inline-flex items-center gap-1 text-lg">
                             <RiMoneyEuroCircleLine /> <span>Doanh thu / vé</span>
                         </p>
@@ -210,13 +260,14 @@ function Ticket() {
             <div className="bg-white rounded shadow p-5">
                 <div className="mb-3">
                     <button
-                        className="inline-flex gap-1 items-center py-1 px-3 rounded bg-red-secondary text-white hover:opacity-80 disabled:opacity-50"
+                        className="inline-flex gap-1 items-center py-1 px-3 rounded bg-red-secondary text-white hover:opacity-80 disabled:opacity-50 mr-2"
                         disabled={selectedId.length === 0}
                         onClick={() => setShowModalDelete(true)}
                     >
                         <AiFillDelete />
                         Xóa ({selectedId.length})
                     </button>
+                    {tickets.data.length > 0 && renderCsvLink()}
                 </div>
                 <div className="mb-3">
                     <div className="flex items-center justify-between">
@@ -289,25 +340,25 @@ function Ticket() {
                                 <td>{renderTicketStatus(ticket.status)}</td>
                                 <td>
                                     {ticket.active ? (
-                                        <span className="text-xs rounded text-white p-1 bg-green-primary">
+                                        <span className="text-xs rounded text-white p-1 bg-green-primary whitespace-nowrap">
                                             Đã kích hoạt
                                         </span>
                                     ) : (
-                                        <span className="text-xs rounded text-white p-1 bg-red-secondary">
+                                        <span className="text-xs rounded text-white p-1 bg-red-secondary whitespace-nowrap">
                                             Chưa kích hoạt
                                         </span>
                                     )}
                                 </td>
                                 <td>
                                     <Dropdown
-                                        className="p-2 rounded-full hover:bg-gray-primary"
+                                        className="p-2 rounded-full hover:bg-gray-secondary"
                                         Menu={({ isShow }) => (
                                             <div
                                                 className="absolute bottom-full right-0 bg-white rounded shadow py-2"
                                                 hidden={!isShow}
                                             >
                                                 <button
-                                                    className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                                    className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                                                     onClick={() => {
                                                         setDataRequest(ticket)
                                                         setShowModalInfo(true)
@@ -316,7 +367,7 @@ function Ticket() {
                                                     Xem
                                                 </button>
                                                 <button
-                                                    className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                                    className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                                                     onClick={() => {
                                                         setDataRequest(ticket)
                                                         setShowModalUpdate(true)
@@ -327,7 +378,7 @@ function Ticket() {
                                                 <Link
                                                     to="/print-ticket"
                                                     state={ticket}
-                                                    className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                                    className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                                                 >
                                                     In vé
                                                 </Link>
@@ -349,7 +400,7 @@ function Ticket() {
                     {tickets.page.totalPages > 1 && (
                         <Pagination
                             className="flex gap-1"
-                            buttonClassName="py-1 px-3 rounded enabled:hover:bg-gray-primary aria-[current]:bg-blue-primary aria-[current]:text-white"
+                            buttonClassName="py-1 px-3 rounded enabled:hover:bg-gray-secondary aria-[current]:bg-blue-primary aria-[current]:text-white"
                             currentPage={tickets.page.page}
                             totalPage={tickets.page.totalPages}
                             onPageClick={(page) => setQuery((prev) => ({ ...prev, page }))}
@@ -385,7 +436,7 @@ function Ticket() {
                                 dateUtil.DATETIME_FORMAT
                             )}
                         </p>
-                        <h1 className="mb-3 text-center font-semibold bg-gray-primary rounded shadow">Chi tiết</h1>
+                        <h1 className="mb-3 text-center font-semibold bg-gray-secondary rounded shadow">Chi tiết</h1>
                         <table className="mb-3 w-full text-left">
                             <thead>
                                 <tr>
@@ -399,7 +450,7 @@ function Ticket() {
                                 {dataRequest.details.map((detail) => (
                                     <tr key={detail.id}>
                                         <td>{detail.seat ? 'Ghế' : 'Khác'}</td>
-                                        <td>{detail.seat?.name || detail.food.name}</td>
+                                        <td>{detail.seat?.name || detail.food?.name}</td>
                                         <td>{detail.quantity}</td>
                                         <td>{currencyUtil.format(detail.price * detail.quantity)}</td>
                                     </tr>

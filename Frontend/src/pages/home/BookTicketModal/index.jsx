@@ -106,8 +106,8 @@ function BookTicketModal({ showtime, setShowModal }) {
                         dateUtil.DATETIME_FORMAT
                     )}
                 </h1>
-                <h1 className="p-1 mb-3 text-center bg-gray-primary">Ghế</h1>
-                <img className="w-full mb-10" src="/images/bg-screen.png" alt="screen" />
+                <h1 className="p-1 mb-3 text-center bg-gray-secondary">Ghế</h1>
+                <img className="w-full mb-10" src={webAPI.getStatic('bg-screen.png')} alt="screen" />
                 <div className="mb-5">
                     <RenderSeatTable
                         seats={seats}
@@ -118,7 +118,7 @@ function BookTicketModal({ showtime, setShowModal }) {
                 <div className="mb-3">
                     <div className="mx-auto lg:w-1/2 p-3 rounded shadow grid sm:grid-cols-2 gap-5">
                         <div className="flex gap-3 items-center">
-                            <div className="p-3 border-4 rounded border-gray-primary bg-gray-primary"></div>
+                            <div className="p-3 border-4 rounded border-gray-secondary bg-gray-secondary"></div>
                             Đã có người
                         </div>
                         {seatTypes.map((type) => (
@@ -129,7 +129,7 @@ function BookTicketModal({ showtime, setShowModal }) {
                         ))}
                     </div>
                 </div>
-                <h1 className="p-1 mb-3 text-center bg-gray-primary">Đồ ăn</h1>
+                <h1 className="p-1 mb-3 text-center bg-gray-secondary">Đồ ăn</h1>
                 <div className="mb-3 grid grid-cols-2 gap-5">
                     {foods.map((food) => (
                         <div key={food.id} className="flex">
@@ -159,8 +159,11 @@ function BookTicketModal({ showtime, setShowModal }) {
                 </div>
             </main>
             <footer>
-                <div className="bg-black-primary text-gray-secondary mb-3">
-                    <div className="h-2" style={{ background: 'url(/images/bg-ticket.png) repeat-x' }}></div>
+                <div className="bg-black-primary text-gray-third mb-3">
+                    <div
+                        className="h-2"
+                        style={{ background: `url(${webAPI.getStatic('bg-ticket.png')}) repeat-x` }}
+                    ></div>
                     <div className="p-5 grid lg:grid-cols-[8rem_70fr_30fr] gap-5">
                         <div className="max-lg:px-10">
                             <Image className="rounded" src={webAPI.getUpload(showtime.movie.thumbnail)} />
@@ -226,7 +229,7 @@ function BookTicketModal({ showtime, setShowModal }) {
                                 </tbody>
                             </table>
                             <button
-                                className="w-full px-5 py-2 rounded-md bg-blue-primary text-white hover:bg-opacity-80 disabled:bg-black-secondary outline-none"
+                                className="w-full px-5 py-2 rounded-md bg-blue-primary text-white hover:bg-opacity-80 disabled:bg-gray-primary outline-none"
                                 onClick={handleButtonBookTicketClick}
                                 disabled={ticketDetails.seat.length === 0 || loading}
                             >
@@ -236,7 +239,10 @@ function BookTicketModal({ showtime, setShowModal }) {
                     </div>
                     <div
                         className="h-2"
-                        style={{ background: 'url(/images/bg-ticket.png) repeat-x', transform: 'rotateX(180deg)' }}
+                        style={{
+                            background: `url(${webAPI.getStatic('bg-ticket.png')}) repeat-x`,
+                            transform: 'rotateX(180deg)',
+                        }}
                     ></div>
                 </div>
             </footer>

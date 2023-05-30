@@ -24,11 +24,11 @@ public class CinemaAPI {
 	
 	@GetMapping
 	List<CinemaEntity> getAll() {
-		return cinemaService.findAll();
+		return cinemaService.findByActiveTrue();
 	}
 	
 	@GetMapping("{cinemaId}/showtime")
 	List<ShowtimeEntity> findByCinemaIdAndStartTime(@PathVariable Long cinemaId, @DateTimeFormat(iso = ISO.DATE) LocalDate startTime){
-		return showtimeService.findByCinemaIdAndStartTime(cinemaId, startTime);
+		return showtimeService.findByCinemaIdAndStartTimeAndActiveTrue(cinemaId, startTime);
 	}
 }

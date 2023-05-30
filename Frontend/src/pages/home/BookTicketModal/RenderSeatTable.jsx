@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 
 function getKey(row, col) {
     return `${row}, ${col}`
@@ -33,7 +33,7 @@ function RenderSeatTable({ seats, selectedIds = [], onSeatClick = () => {} }) {
                                     <td key={col}>
                                         {seat ? (
                                             <button
-                                                className="py-1 px-3 border-4 rounded aria-selected:bg-blue-secondary disabled:border-gray-primary disabled:bg-gray-primary"
+                                                className="py-1 px-3 border-4 rounded aria-selected:bg-blue-secondary disabled:border-gray-secondary disabled:bg-gray-secondary"
                                                 style={{ borderColor: !seat.occupied && seat.type.color }}
                                                 onClick={(e) => onSeatClick(seat)}
                                                 aria-selected={selectedIds.includes(seat.id)}

@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import Image from '../components/Image'
 import { useAuth } from '../contexts/AuthContext'
 import { validateField, validateObject } from '../utils/validateUtil'
+import webAPI from '../api/webAPI'
 
 const validateRules = [
     {
@@ -57,7 +58,7 @@ function Login() {
             <form onSubmit={handleFormSubmit}>
                 <div className="flex items-center bg-white p-5 rounded-2xl shadow drop-shadow">
                     <div>
-                        <Image className="rounded-2xl" src="/images/login-thumbnail.jpg" />
+                        <Image className="rounded-2xl" src={webAPI.getStatic('login-thumbnail.jpg')} />
                     </div>
                     <div className="px-10 min-w-[23rem]">
                         <div className="text-2xl font-bold text-center mb-10">Đăng Nhập</div>

@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.movieticket.app.dto.UserDTO;
+import com.movieticket.app.entity.BannerEntity;
 import com.movieticket.app.entity.FoodEntity;
 import com.movieticket.app.entity.SeatEntity;
 import com.movieticket.app.entity.UserEntity;
+import com.movieticket.app.service.IBannerService;
 import com.movieticket.app.service.IFoodService;
 import com.movieticket.app.service.ISeatService;
 import com.movieticket.app.service.IUserService;
@@ -25,6 +27,7 @@ public class HomeAPI {
 	@Autowired IUserService userService;
 	@Autowired ISeatService seatService;
 	@Autowired IFoodService foodService;
+	@Autowired IBannerService bannerService;
 
 	@PostMapping("register")
 	@ResponseStatus(HttpStatus.CREATED)
@@ -35,11 +38,16 @@ public class HomeAPI {
 	
 	@GetMapping("seat")
 	List<SeatEntity> getSeatByRoomId(Long roomId, Long showtimeId){
-		return seatService.findAllWithOccupied(roomId, showtimeId);
+		return seatService.findByRoomIdAndActiveTrueWithOccupied(roomId, showtimeId);
 	}
 	
 	@GetMapping("food")
 	List<FoodEntity> getAllFood(){
-		return foodService.findAll();
+		return foodService.findByActiveTrue();
+	}
+	
+	@GetMapping("banner")
+	List<BannerEntity> getAll() {
+		return bannerService.findByActiveTrue();
 	}
 }

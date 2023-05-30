@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -24,6 +25,7 @@ public class FoodEntity extends BaseEntity {
 
 	private String thumbnail;
 	
+	@Column(columnDefinition = "TEXT")
 	private String description;
 	
 	private int price;

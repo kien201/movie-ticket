@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IoMdAdd } from 'react-icons/io'
 import { toast } from 'react-toastify'
 import { Link, useParams } from 'react-router-dom'

@@ -22,7 +22,7 @@ function Header({ className, handleShowSidebar }) {
                 <Logo />
             </Link>
             <div className="flex-1 flex justify-between items-center px-3">
-                <button className="text-lg p-2 rounded-full hover:bg-gray-primary" onClick={handleShowSidebar}>
+                <button className="text-lg p-2 rounded-full hover:bg-gray-secondary" onClick={handleShowSidebar}>
                     <TiThMenu />
                 </button>
 
@@ -37,12 +37,12 @@ function Header({ className, handleShowSidebar }) {
                             <hr />
                             <Link
                                 to="/profile/ticket"
-                                className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                             >
                                 Thông tin cá nhân
                             </Link>
                             <button
-                                className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                                 onClick={handleLogout}
                             >
                                 Đăng xuất

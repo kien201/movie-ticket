@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 
 import Image from '../components/Image'
@@ -33,8 +33,8 @@ function PrintTicket() {
     }
 
     return (
-        <div className="bg-black-primary text-gray-secondary mt-20">
-            <div className="h-2" style={{ background: 'url(/images/bg-ticket.png) repeat-x' }}></div>
+        <div className="bg-black-primary text-gray-third mt-20">
+            <div className="h-2" style={{ background: `url(${webAPI.getStatic('bg-ticket.png')}) repeat-x` }}></div>
             <div className="p-5 grid grid-cols-[8rem_60fr_40fr] gap-5">
                 <div>
                     <Image className="rounded" src={webAPI.getUpload(ticket.showtime.movie.thumbnail)} />
@@ -94,7 +94,10 @@ function PrintTicket() {
             </div>
             <div
                 className="h-2"
-                style={{ background: 'url(/images/bg-ticket.png) repeat-x', transform: 'rotateX(180deg)' }}
+                style={{
+                    background: `url(${webAPI.getStatic('bg-ticket.png')}) repeat-x`,
+                    transform: 'rotateX(180deg)',
+                }}
             ></div>
         </div>
     )

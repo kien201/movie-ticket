@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 
 import webAPI from '../../api/webAPI'
@@ -28,7 +28,7 @@ function Ticket() {
             case ticketStatus.PAYMENT_FAILED.value:
                 return <span className="text-xs rounded text-white p-1 bg-red-secondary">Lỗi thanh toán</span>
             default:
-                return <span className="text-xs rounded p-1 bg-gray-primary">Chưa thanh toán</span>
+                return <span className="text-xs rounded p-1 bg-gray-secondary">Chưa thanh toán</span>
         }
     }
 
@@ -57,14 +57,14 @@ function Ticket() {
                             <td>{renderTicketStatus(ticket.status)}</td>
                             <td>
                                 <Dropdown
-                                    className="p-2 rounded-full hover:bg-gray-primary"
+                                    className="p-2 rounded-full hover:bg-gray-secondary"
                                     Menu={({ isShow }) => (
                                         <div
                                             className="absolute bottom-full right-0 bg-white rounded shadow py-2"
                                             hidden={!isShow}
                                         >
                                             <button
-                                                className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                                className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                                                 onClick={() => {
                                                     setSelectedTicket(ticket)
                                                     setShowModalInfo(true)
@@ -75,7 +75,7 @@ function Ticket() {
                                             <Link
                                                 to="/print-ticket"
                                                 state={ticket}
-                                                className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                                className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                                             >
                                                 In vé
                                             </Link>
@@ -117,7 +117,7 @@ function Ticket() {
                                 dateUtil.DATETIME_FORMAT
                             )}
                         </p>
-                        <h1 className="mb-3 text-center font-semibold bg-gray-primary rounded shadow">Chi tiết</h1>
+                        <h1 className="mb-3 text-center font-semibold bg-gray-secondary rounded shadow">Chi tiết</h1>
                         <table className="mb-3 w-full text-left">
                             <thead>
                                 <tr>

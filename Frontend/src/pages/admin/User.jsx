@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { AiFillDelete } from 'react-icons/ai'
 import { IoMdAdd } from 'react-icons/io'
 import { BsThreeDotsVertical } from 'react-icons/bs'
@@ -315,25 +315,25 @@ function User() {
                                 <td>{user.phoneNumber}</td>
                                 <td>
                                     {user.active ? (
-                                        <span className="text-xs rounded text-white p-1 bg-green-primary">
+                                        <span className="text-xs rounded text-white p-1 bg-green-primary whitespace-nowrap">
                                             Đã kích hoạt
                                         </span>
                                     ) : (
-                                        <span className="text-xs rounded text-white p-1 bg-red-secondary">
+                                        <span className="text-xs rounded text-white p-1 bg-red-secondary whitespace-nowrap">
                                             Chưa kích hoạt
                                         </span>
                                     )}
                                 </td>
                                 <td>
                                     <Dropdown
-                                        className="p-2 rounded-full hover:bg-gray-primary"
+                                        className="p-2 rounded-full hover:bg-gray-secondary"
                                         Menu={({ isShow }) => (
                                             <div
                                                 className="absolute bottom-full right-0 bg-white rounded shadow py-2"
                                                 hidden={!isShow}
                                             >
                                                 <button
-                                                    className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                                    className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                                                     onClick={() => {
                                                         setDataRequest({
                                                             ...user,
@@ -346,7 +346,7 @@ function User() {
                                                     Sửa
                                                 </button>
                                                 <button
-                                                    className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                                    className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                                                     onClick={() => {
                                                         setDataRequest(user)
                                                         setShowModalResetPass(true)
@@ -372,7 +372,7 @@ function User() {
                     {users.page.totalPages > 1 && (
                         <Pagination
                             className="flex gap-1"
-                            buttonClassName="py-1 px-3 rounded enabled:hover:bg-gray-primary aria-[current]:bg-blue-primary aria-[current]:text-white"
+                            buttonClassName="py-1 px-3 rounded enabled:hover:bg-gray-secondary aria-[current]:bg-blue-primary aria-[current]:text-white"
                             currentPage={users.page.page}
                             totalPage={users.page.totalPages}
                             onPageClick={(page) => setQuery((prev) => ({ ...prev, page }))}

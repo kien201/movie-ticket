@@ -7,7 +7,6 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -30,17 +29,13 @@ public class MovieService implements IMovieService {
 	public List<MovieEntity> findAll(){
 		return movieRepository.findAll(Sort.by(Direction.DESC, "id"));
 	}
-	
-	public List<MovieEntity> findTop3ByOrderByTicketCount(){
-		return movieRepository.findByOrderByTicketCountDesc(PageRequest.of(0, 3));
-	}
 
 	public PageDTO<MovieEntity> findAll(QueryFilter filter){
 		Page<MovieEntity> page = movieRepository.findBySearchValueContains(filter.getQ(), filter.toPageable());
 		return PageDTO.from(page);
 	}
 	
-	public PageDTO<MovieEntity> findAll(QueryFilter filter, String movieType){
+	public PageDTO<MovieEntity> findByMovieTypeAndActiveTrue(QueryFilter filter, String movieType){
 		Page<MovieEntity> page = movieRepository.findBySearchValueContainsAndMovieTypeAndActiveTrue(filter.getQ(), movieType, filter.toPageable());
 		return PageDTO.from(page);
 	}

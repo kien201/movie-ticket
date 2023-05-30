@@ -7,6 +7,7 @@ import com.movieticket.app.entity.CinemaEntity;
 
 public interface ICinemaService {
 	List<CinemaEntity> findAll();
+	List<CinemaEntity> findByActiveTrue();
 	
 	CinemaEntity findOne(Long id);
 	

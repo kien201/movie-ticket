@@ -11,6 +11,8 @@ public interface IShowtimeService {
 	
 	List<ShowtimeEntity> findByMovieIdAndStartTime(Long movieId, LocalDate startTime);
 	List<ShowtimeEntity> findByCinemaIdAndStartTime(Long cinemaId, LocalDate startTime);
+	List<ShowtimeEntity> findByMovieIdAndStartTimeAndActiveTrue(Long movieId, LocalDate startTime);
+	List<ShowtimeEntity> findByCinemaIdAndStartTimeAndActiveTrue(Long cinemaId, LocalDate startTime);
 	
 	ShowtimeEntity findOne(Long id);
 	

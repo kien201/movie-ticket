@@ -10,7 +10,7 @@ public interface ISeatService {
 
 	List<SeatEntity> findAll(Long roomId);
 
-	List<SeatEntity> findAllWithOccupied(Long roomId, Long showtimeId);
+	List<SeatEntity> findByRoomIdAndActiveTrueWithOccupied(Long roomId, Long showtimeId);
 	
 	SeatEntity findOne(Long id);
 	

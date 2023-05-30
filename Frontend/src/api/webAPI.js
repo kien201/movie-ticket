@@ -68,10 +68,20 @@ const food = {
     },
 }
 
+const banner = {
+    getAll() {
+        return publicAPI.get('/banner')
+    },
+}
+
+function getStatic(url) {
+    return process.env.REACT_APP_STATIC_URL + '/' + url
+}
+
 function getUpload(url) {
     return process.env.REACT_APP_API_URL + '/static/upload/' + url
 }
 
-const webAPI = { getUpload, profile, movie, cinema, seat, food }
+const webAPI = { getUpload, getStatic, profile, movie, cinema, seat, food, banner }
 
 export default webAPI

@@ -3,7 +3,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import { AuthProvider } from './contexts/AuthContext'
-import CheckRole, { RoleName } from './components/CheckRole'
+import CheckAuth, { RoleName } from './components/CheckAuth'
 import { AdminLayout, HomeLayout, ProfileLayout } from './layouts'
 import {
     Home,
@@ -26,7 +26,9 @@ import {
     PrintTicket,
     Register,
     ChangePass,
+    BannerManage,
 } from './pages'
+import FacebookProvider from './vendors/facebook/FacebookProvider'
 
 const router = createBrowserRouter([
     {
@@ -43,26 +45,26 @@ const router = createBrowserRouter([
     {
         path: 'admin/*',
         element: (
-            <CheckRole roles={[RoleName.SHOW_ADMIN]}>
+            <CheckAuth roles={[RoleName.SHOW_ADMIN]}>
                 <AdminLayout />
-            </CheckRole>
+            </CheckAuth>
         ),
         children: [
             { index: true, element: <Dashboard /> },
             {
                 path: 'user',
                 element: (
-                    <CheckRole roles={[RoleName.MANAGE_USER]}>
+                    <CheckAuth roles={[RoleName.MANAGE_USER]}>
                         <UserManage />
-                    </CheckRole>
+                    </CheckAuth>
                 ),
             },
             {
                 path: 'cinema/*',
                 element: (
-                    <CheckRole roles={[RoleName.MANAGE_CINEMA]}>
+                    <CheckAuth roles={[RoleName.MANAGE_CINEMA]}>
                         <Outlet />
-                    </CheckRole>
+                    </CheckAuth>
                 ),
                 children: [
                     { index: true, element: <CinemaManage /> },
@@ -73,33 +75,37 @@ const router = createBrowserRouter([
             {
                 path: 'food',
                 element: (
-                    <CheckRole roles={[RoleName.MANAGE_FOOD]}>
+                    <CheckAuth roles={[RoleName.MANAGE_FOOD]}>
                         <FoodManage />
-                    </CheckRole>
+                    </CheckAuth>
                 ),
+            },
+            {
+                path: 'banner',
+                element: <BannerManage />,
             },
             {
                 path: 'movie',
                 element: (
-                    <CheckRole roles={[RoleName.MANAGE_MOVIE]}>
+                    <CheckAuth roles={[RoleName.MANAGE_MOVIE]}>
                         <MovieManage />
-                    </CheckRole>
+                    </CheckAuth>
                 ),
             },
             {
                 path: 'showtime',
                 element: (
-                    <CheckRole roles={[RoleName.MANAGE_SHOWTIME]}>
+                    <CheckAuth roles={[RoleName.MANAGE_SHOWTIME]}>
                         <ShowtimeManage />
-                    </CheckRole>
+                    </CheckAuth>
                 ),
             },
             {
                 path: 'ticket',
                 element: (
-                    <CheckRole roles={[RoleName.MANAGE_TICKET]}>
+                    <CheckAuth roles={[RoleName.MANAGE_TICKET]}>
                         <TicketManage />
-                    </CheckRole>
+                    </CheckAuth>
                 ),
             },
             { path: '*', element: <Navigate to="/admin" replace /> },
@@ -108,9 +114,9 @@ const router = createBrowserRouter([
     {
         path: 'profile/*',
         element: (
-            <CheckRole>
+            <CheckAuth>
                 <HomeLayout />
-            </CheckRole>
+            </CheckAuth>
         ),
         children: [
             {
@@ -134,9 +140,11 @@ const router = createBrowserRouter([
 function App() {
     return (
         <>
-            <AuthProvider>
-                <RouterProvider router={router} />
-            </AuthProvider>
+            <FacebookProvider appId={process.env.REACT_APP_FB_APP_ID}>
+                <AuthProvider>
+                    <RouterProvider router={router} />
+                </AuthProvider>
+            </FacebookProvider>
             <ToastContainer />
         </>
     )

@@ -10,10 +10,12 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "role")
+@NoArgsConstructor
 @Getter @Setter
 public class RoleEntity extends BaseEntity {
 	
@@ -24,4 +26,9 @@ public class RoleEntity extends BaseEntity {
 	@ManyToMany(mappedBy = "roles")
 	@JsonIgnore
 	private Set<UserEntity> users = new HashSet<>();
+	
+	public RoleEntity(String name, String description) {
+		this.name = name;
+		this.description = description;
+	}
 }

@@ -8,6 +8,11 @@ import BookTicketModal from './BookTicketModal'
 import { useAuth } from '../../contexts/AuthContext'
 import { toast } from 'react-toastify'
 import { handleError } from '../../api/axiosConfig'
+import FacebookComment from '../../vendors/facebook/FacebookComment'
+
+function CheckLocalhost() {
+    return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+}
 
 function MovieDetail() {
     const { currentUser } = useAuth()
@@ -61,94 +66,101 @@ function MovieDetail() {
     return loading ? (
         <></>
     ) : (
-        <div className="container-custom flex flex-wrap py-5">
-            <div className="w-full md:w-1/5">
-                <Image
-                    className="object-cover rounded-lg mb-3 mx-auto max-md:w-3/5"
-                    src={webAPI.getUpload(movie.thumbnail)}
-                />
-                <h1 className="font-semibold text-lg">{movie.name}</h1>
-                <p className="mb-3 text-justify">{movie.description}</p>
-                <table className="w-full">
-                    <tbody>
-                        {movie.director && (
-                            <tr>
-                                <td className="text-black-secondary">Đạo diễn</td>
-                                <td>{movie.director}</td>
-                            </tr>
-                        )}
-                        {movie.actor && (
-                            <tr>
-                                <td className="text-black-secondary">Diễn viên</td>
-                                <td>{movie.actor}</td>
-                            </tr>
-                        )}
-                        {movie.genre && (
-                            <tr>
-                                <td className="text-black-secondary">Thể loại</td>
-                                <td>{movie.genre}</td>
-                            </tr>
-                        )}
-                        {movie.premiere && (
-                            <tr>
-                                <td className="text-black-secondary">Khởi chiếu</td>
-                                <td>{dateUtil.format(movie.premiere, dateUtil.DATE_FORMAT)}</td>
-                            </tr>
-                        )}
-                        <tr>
-                            <td className="text-black-secondary">Thời lượng</td>
-                            <td>{movie.duration} phút</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div className="w-full md:w-4/5 md:pl-5">
-                <h1 className="text-lg font-bold">Chọn lịch chiếu</h1>
-                <hr />
-                <div className="flex overflow-x-auto gap-2 pb-2 mb-3 snap-x">
-                    {datePickers.map((date, index) => (
-                        <button
-                            key={index}
-                            className="snap-start rounded border p-2 aria-selected:border-blue-primary"
-                            onClick={(e) => setSelectedDate(date)}
-                            role="tab"
-                            aria-selected={selectedDate === date}
-                        >
-                            <h1 className="font-bold text-3xl">{dateUtil.pad(date.getDate())}</h1>
-                            <p className="text-sm">{dateUtil.format(date, 'MM/yyyy')}</p>
-                        </button>
-                    ))}
-                </div>
-                {cinemasWithShowtime.length > 0 ? (
-                    cinemasWithShowtime.map((cinema) => (
-                        <div key={cinema.id} className="mb-3">
-                            <h1 className="text-lg font-semibold">{cinema.name}</h1>
-                            <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-2">
-                                {cinema.showtimes.map((showtime) => (
-                                    <button
-                                        key={showtime.id}
-                                        className="p-2 rounded bg-green-primary text-white transition-colors hover:bg-opacity-80"
-                                        onClick={(e) => {
-                                            if (currentUser) {
-                                                setSelectedShowtime(showtime)
-                                                setShowModalBookTicket(true)
-                                            } else toast.error('Bạn chưa đăng nhập')
-                                        }}
-                                    >
-                                        {dateUtil.format(showtime.startTime, dateUtil.TIME_FORMAT)}
-                                    </button>
-                                ))}
-                            </div>
+        <>
+            <div className="container-custom py-5">
+                <div className="flex flex-wrap mb-5">
+                    <div className="w-full md:w-1/4 text-justify">
+                        <Image
+                            className="object-cover rounded-lg mb-3 mx-auto max-md:w-3/5"
+                            src={webAPI.getUpload(movie.thumbnail)}
+                        />
+                        <h1 className="font-semibold text-lg">{movie.name}</h1>
+                        <p className="mb-3 indent-5">{movie.description}</p>
+                        <table className="w-full">
+                            <tbody>
+                                {movie.director && (
+                                    <tr>
+                                        <td className="whitespace-nowrap text-gray-primary align-top">Đạo diễn</td>
+                                        <td>{movie.director}</td>
+                                    </tr>
+                                )}
+                                {movie.actor && (
+                                    <tr>
+                                        <td className="whitespace-nowrap text-gray-primary align-top">Diễn viên</td>
+                                        <td>{movie.actor}</td>
+                                    </tr>
+                                )}
+                                {movie.genre && (
+                                    <tr>
+                                        <td className="whitespace-nowrap text-gray-primary align-top">Thể loại</td>
+                                        <td>{movie.genre}</td>
+                                    </tr>
+                                )}
+                                {movie.premiere && (
+                                    <tr>
+                                        <td className="whitespace-nowrap text-gray-primary align-top">Khởi chiếu</td>
+                                        <td>{dateUtil.format(movie.premiere, dateUtil.DATE_FORMAT)}</td>
+                                    </tr>
+                                )}
+                                <tr>
+                                    <td className="whitespace-nowrap text-gray-primary align-top">Thời lượng</td>
+                                    <td>{movie.duration} phút</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="w-full md:w-3/4 md:pl-5">
+                        <h1 className="text-lg font-bold">Chọn lịch chiếu</h1>
+                        <hr />
+                        <div className="flex overflow-x-auto gap-2 pb-2 mb-3 snap-x">
+                            {datePickers.map((date, index) => (
+                                <button
+                                    key={index}
+                                    className="snap-start rounded border p-2 aria-selected:border-blue-primary"
+                                    onClick={(e) => setSelectedDate(date)}
+                                    role="tab"
+                                    aria-selected={selectedDate === date}
+                                >
+                                    <h1 className="font-bold text-3xl">{dateUtil.pad(date.getDate())}</h1>
+                                    <p className="text-sm">{dateUtil.format(date, 'MM/yyyy')}</p>
+                                </button>
+                            ))}
                         </div>
-                    ))
-                ) : (
-                    <p>Chưa có lịch chiếu</p>
-                )}
+                        {cinemasWithShowtime.length > 0 ? (
+                            cinemasWithShowtime.map((cinema) => (
+                                <div key={cinema.id} className="mb-3">
+                                    <h1 className="text-lg font-semibold">{cinema.name}</h1>
+                                    <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-2">
+                                        {cinema.showtimes.map((showtime) => (
+                                            <button
+                                                key={showtime.id}
+                                                className="p-2 rounded bg-green-primary text-white transition-colors hover:bg-opacity-80"
+                                                onClick={(e) => {
+                                                    if (currentUser) {
+                                                        setSelectedShowtime(showtime)
+                                                        setShowModalBookTicket(true)
+                                                    } else toast.error('Bạn chưa đăng nhập')
+                                                }}
+                                            >
+                                                {dateUtil.format(showtime.startTime, dateUtil.TIME_FORMAT)}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p>Chưa có lịch chiếu</p>
+                        )}
+                    </div>
+                    {showModalBookTicket && (
+                        <BookTicketModal showtime={selectedShowtime} setShowModal={setShowModalBookTicket} />
+                    )}
+                </div>
+                <FacebookComment
+                    url={CheckLocalhost() ? `https://animehay.fan/movie/${movie.slug}` : window.location.href}
+                />
             </div>
-            {showModalBookTicket && (
-                <BookTicketModal showtime={selectedShowtime} setShowModal={setShowModalBookTicket} />
-            )}
-        </div>
+        </>
     )
 }
 

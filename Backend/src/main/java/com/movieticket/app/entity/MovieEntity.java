@@ -5,12 +5,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Formula;
 
@@ -30,7 +30,8 @@ public class MovieEntity extends BaseEntity {
 	private String slug;
 	
 	private String thumbnail;
-	
+
+	@Column(columnDefinition = "TEXT")
 	private String description;
 	
 	private String director;
@@ -50,8 +51,8 @@ public class MovieEntity extends BaseEntity {
 	@Formula("concat(name,description,director,actor,genre,premiere,duration)")
 	private String searchValue;
 	
-	@Transient
-	private long ticketCount;
+	@Formula("(select count(s.id) from showtime s where s.movie_id = id and s.start_time > current_date)")
+	private long showtimeCount;
 	
 	@PrePersist
 	@PreUpdate

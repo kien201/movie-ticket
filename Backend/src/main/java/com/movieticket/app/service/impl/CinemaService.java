@@ -24,6 +24,10 @@ public class CinemaService implements ICinemaService {
 		return cinemaRepository.findAll(Sort.by(Direction.ASC, "id"));
 	}
 	
+	public List<CinemaEntity> findByActiveTrue(){
+		return cinemaRepository.findByActive(true, Sort.by(Direction.ASC, "id"));
+	}
+	
 	public CinemaEntity findOne(Long id) {
 		return cinemaRepository.findById(id).orElseThrow(()-> new NoSuchElementException("Không tìm thấy cinema"));
 	}

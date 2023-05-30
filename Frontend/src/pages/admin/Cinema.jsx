@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IoMdAdd } from 'react-icons/io'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { toast } from 'react-toastify'
@@ -136,14 +136,14 @@ function Cinema() {
                         <div key={cinema.id} className="relative select-none">
                             <div className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 text-black-primary">
                                 <Dropdown
-                                    className="p-2 rounded-full bg-gray-primary"
+                                    className="p-2 rounded-full bg-gray-secondary"
                                     Menu={({ isShow }) => (
                                         <div
                                             className="absolute bottom-full right-1/2 translate-x-1/2 bg-white rounded shadow py-2"
                                             hidden={!isShow}
                                         >
                                             <button
-                                                className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                                className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                                                 onClick={() => {
                                                     setDataRequest(cinema)
                                                     setErrors({})
@@ -153,7 +153,7 @@ function Cinema() {
                                                 Sửa
                                             </button>
                                             <button
-                                                className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                                className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                                                 onClick={() => {
                                                     setDataRequest(cinema)
                                                     setShowModalDelete(true)

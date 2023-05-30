@@ -33,7 +33,7 @@ function Header() {
                 </div>
                 <div className="flex items-center gap-3">
                     <Dropdown
-                        className="p-3 rounded-full bg-gray-primary text-lg"
+                        className="p-3 rounded-full bg-gray-secondary text-lg"
                         Menu={({ isShow }) => (
                             <div
                                 className="absolute top-[calc(100%+10px)] right-0 min-w-[10rem] bg-white rounded shadow-blur p-3 transition-transform origin-top aria-hidden:scale-y-0"
@@ -63,7 +63,7 @@ function Header() {
                     </Dropdown>
                     {currentUser ? (
                         <Dropdown
-                            className="p-3 rounded-full bg-gray-primary text-lg"
+                            className="p-3 rounded-full bg-gray-secondary text-lg"
                             Menu={({ isShow }) => (
                                 <div
                                     className="absolute top-[calc(100%+10px)] right-0 min-w-[10rem] bg-white rounded shadow-blur py-2 transition-transform origin-top aria-hidden:scale-y-0"
@@ -75,12 +75,12 @@ function Header() {
                                     <hr />
                                     <Link
                                         to="/profile/ticket"
-                                        className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                        className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                                     >
                                         Thông tin cá nhân
                                     </Link>
                                     <button
-                                        className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-primary"
+                                        className="block w-full text-left whitespace-nowrap px-3 py-1 hover:bg-gray-secondary"
                                         onClick={handleLogout}
                                     >
                                         Đăng xuất
@@ -94,7 +94,7 @@ function Header() {
                         <Link
                             to="/login"
                             state={{ navigateBack: true }}
-                            className="p-3 rounded-full bg-gray-primary text-lg"
+                            className="p-3 rounded-full bg-gray-secondary text-lg"
                         >
                             <BiLogInCircle />
                         </Link>

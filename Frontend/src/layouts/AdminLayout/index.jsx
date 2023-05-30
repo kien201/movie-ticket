@@ -13,7 +13,7 @@ function AdminLayout() {
             <div>
                 <Sidebar className={`w-60 ${!showSidebar && '-translate-x-full'}`} />
                 <main
-                    className={`min-h-[calc(100vh-3.5rem)] transition-[margin] duration-700 p-5 shadow-inner bg-gray-secondary ${
+                    className={`min-h-[calc(100vh-3.5rem)] transition-[margin] duration-700 p-5 shadow-inner bg-gray-third ${
                         showSidebar && 'md:ml-60'
                     }`}
                 >

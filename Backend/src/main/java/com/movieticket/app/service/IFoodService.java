@@ -9,9 +9,9 @@ import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.entity.FoodEntity;
 
 public interface IFoodService {
-	PageDTO<FoodEntity> findAll(QueryFilter filter);
-	
 	List<FoodEntity> findAll();
+	List<FoodEntity> findByActiveTrue();
+	PageDTO<FoodEntity> findAll(QueryFilter filter);
 	
 	FoodEntity findOne(Long id);
 	

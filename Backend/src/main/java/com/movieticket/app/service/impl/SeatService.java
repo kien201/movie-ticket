@@ -30,8 +30,8 @@ public class SeatService implements ISeatService {
 		return seatRepository.findByRoomId(roomId);
 	}
 	
-	public List<SeatEntity> findAllWithOccupied(Long roomId, Long showtimeId){
-		List<SeatEntity> seats = seatRepository.findByRoomId(roomId);
+	public List<SeatEntity> findByRoomIdAndActiveTrueWithOccupied(Long roomId, Long showtimeId){
+		List<SeatEntity> seats = seatRepository.findByRoomIdAndActiveTrue(roomId);
 		List<SeatEntity> occupiedSeats = seatRepository.findOccupiedByShowtimeId(showtimeId);
 		seats.forEach(seat -> {
 			boolean isOccupied = occupiedSeats.stream().anyMatch(s -> s.getId() == seat.getId());

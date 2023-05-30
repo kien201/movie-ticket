@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TfiSearch } from 'react-icons/tfi'
 
 function InputDelay({ className, onAfterDelay = () => {}, delay = 800 }) {

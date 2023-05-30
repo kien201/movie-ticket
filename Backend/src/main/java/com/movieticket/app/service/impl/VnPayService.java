@@ -73,10 +73,10 @@ public class VnPayService implements IPaymentService {
 		
 		if (signValue.equals(vnp_SecureHash)) {
 			TicketEntity ticket = ticketRepository.findById(ticketId).orElseThrow(()->new NoSuchElementException("Không tìm thấy vé"));
+			ticket.setActive(true);
 		    if (req.getParameter("vnp_ResponseCode").equals("00")) {
 //		    	Move to IPN when have SSL(https)
 		    	ticket.setStatus(TicketStatus.PAYMENT_SUCCESS);
-		    	ticket.setActive(true);
 				res.put("code", "00");
 				res.put("message", "Thanh toán thành công");
 		    } else {

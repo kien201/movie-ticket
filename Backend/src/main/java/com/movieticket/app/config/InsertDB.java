@@ -1,28 +1,26 @@
 //package com.movieticket.app.config;
 //
-//import java.io.File;
-//import java.nio.file.Files;
-//import java.nio.file.Paths;
 //import java.util.ArrayList;
 //import java.util.Arrays;
 //import java.util.List;
 //
-//import javax.servlet.ServletContext;
-//
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.CommandLineRunner;
 //import org.springframework.stereotype.Component;
-//import org.springframework.util.ResourceUtils;
 //
-//import com.movieticket.app.repository.MovieRepository;
+//import com.movieticket.app.constants.RoleName;
+//import com.movieticket.app.dto.UserDTO;
+//import com.movieticket.app.entity.RoleEntity;
 //import com.movieticket.app.repository.RoleRepository;
 //import com.movieticket.app.service.impl.UserService;
 //
+//import lombok.extern.slf4j.Slf4j;
+//
 //@Component
+//@Slf4j
 //public class InsertDB implements CommandLineRunner {
 //	@Autowired RoleRepository roleRepository;
 //	@Autowired UserService userService;
-//	@Autowired MovieRepository movie;
 //
 //	@Override
 //	public void run(String... args) throws Exception {
@@ -33,12 +31,17 @@
 //		roleEntities.add(new RoleEntity(RoleName.MANAGE_MOVIE, "Cập nhật movie"));
 //		roleEntities.add(new RoleEntity(RoleName.MANAGE_SHOWTIME, "Cập nhật lịch chiếu"));
 //		roleEntities.add(new RoleEntity(RoleName.MANAGE_USER, "Cập nhật người dùng"));
+//		roleEntities.add(new RoleEntity(RoleName.MANAGE_TICKET, "Cập nhật vé"));
 //		roleRepository.saveAll(roleEntities);
 //		UserDTO u = new UserDTO();
 //		u.setUsername("admin");
 //		u.setPassword("admin");
+//		u.setFullname("");
+//		u.setEmail("");
+//		u.setPhoneNumber("");
 //		u.setRoleNames(Arrays.asList(RoleName.SHOW_ADMIN, RoleName.MANAGE_USER));
-//		UserEntity user = userService.create(u);
+//		userService.create(u);
+//		log.info("Success fully create admin account with username: "+u.getUsername()+", password: "+u.getPassword());
 //	}
 //
 //}

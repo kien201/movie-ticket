@@ -176,6 +176,26 @@ const ticket = {
     },
 }
 
-const adminAPI = { user, role, movie, food, cinema, room, seat, seatType, showtime, ticket }
+const banner = {
+    url: '/admin/banner',
+    getAll() {
+        return privateAPI.get(this.url)
+    },
+    create(data) {
+        return privateAPI.post(this.url, data, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
+    },
+    update(id, data) {
+        return privateAPI.put(`${this.url}/${id}`, data, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        })
+    },
+    delete(data) {
+        return privateAPI.delete(this.url, { data })
+    },
+}
+
+const adminAPI = { user, role, movie, food, cinema, room, seat, seatType, showtime, ticket, banner }
 
 export default adminAPI

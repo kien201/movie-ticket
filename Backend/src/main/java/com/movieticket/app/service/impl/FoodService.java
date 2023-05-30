@@ -30,6 +30,10 @@ public class FoodService implements IFoodService {
 		return foodRepository.findAll(Sort.by(Direction.DESC, "id"));
 	}
 	
+	public List<FoodEntity> findByActiveTrue(){
+		return foodRepository.findByActive(true, Sort.by(Direction.DESC, "id"));
+	}
+	
 	public PageDTO<FoodEntity> findAll(QueryFilter filter){
 		Page<FoodEntity> page = foodRepository.findBySearchValueContains(filter.getQ(), filter.toPageable());
 		return PageDTO.from(page);

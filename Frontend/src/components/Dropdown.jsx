@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 function Dropdown({ Menu, ...props }) {
     const [show, setShow] = useState(false)

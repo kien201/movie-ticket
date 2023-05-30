@@ -15,7 +15,7 @@ function MenuLink(props) {
 function ProfileLayout() {
     return (
         <div className="container-custom">
-            <div className="bg-gray-primary shadow-inner p-5">
+            <div className="bg-gray-secondary shadow-inner p-5">
                 <div className="flex">
                     <MenuLink to="/profile/ticket">Vé của tôi</MenuLink>
                     <MenuLink to="/profile" end>
