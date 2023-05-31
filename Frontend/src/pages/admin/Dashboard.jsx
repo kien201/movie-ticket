@@ -21,7 +21,6 @@ function Dashboard() {
 
         async function loadTickets() {
             const fromDate = ticketFilter === 'week' ? monday : firstDayOfMonth
-
             const res = await adminAPI.ticket.getAll({
                 fromDate: dateUtil.format(fromDate, dateUtil.INPUT_DATE_FORMAT),
                 toDate: dateUtil.format(today, dateUtil.INPUT_DATE_FORMAT),

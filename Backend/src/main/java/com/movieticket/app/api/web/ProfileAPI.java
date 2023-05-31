@@ -79,7 +79,7 @@ public class ProfileAPI {
 		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		ticketDTO.setUserId(principal.getUser().getId());
 		TicketEntity ticket = ticketService.create(ticketDTO);
-		long totalPrice = ticket.getTotalPrice();
+		long totalPrice = ticket.getDetails().stream().reduce(0L, (total, detail) -> total + detail.getPrice() * detail.getQuantity(), Long::sum);
 		return paymentService.getPaymentURL(req, ticket.getId(), totalPrice);
 	}
 	

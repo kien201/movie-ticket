@@ -96,7 +96,7 @@ function BookTicketModal({ showtime, setShowModal }) {
     return loading ? (
         <></>
     ) : (
-        <Modal className="w-2/3" onHideClick={() => setShowModal(false)}>
+        <Modal className="md:w-2/3" onHideClick={() => setShowModal(false)}>
             <main className="mb-3">
                 <h1 className="text-lg font-semibold">
                     {showtime.room.cinema.name} | {showtime.room.name} |{' '}

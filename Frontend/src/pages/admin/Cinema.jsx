@@ -203,7 +203,7 @@ function Cinema() {
                             </div>
                             <div className="mb-3">
                                 <label>
-                                    Mô tả
+                                    Địa chỉ
                                     <input
                                         className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"
@@ -263,7 +263,7 @@ function Cinema() {
                             </div>
                             <div className="mb-3">
                                 <label>
-                                    Mô tả
+                                    Địa chỉ
                                     <input
                                         className="border aria-[invalid]:outline-red-primary rounded-md px-3 py-2 w-full focus:outline outline-blue-primary"
                                         type="text"

@@ -89,12 +89,11 @@ public class TicketService implements ITicketService {
 		ticket.setShowtime(showtime);
 		ticket.setActive(false);
 		
-		List<TicketDetailEntity> ticketDetails = ticketDetailRepository.saveAll(getTicketDetails(ticketDTO));
+		List<TicketDetailEntity> ticketDetails = getTicketDetails(ticketDTO);
 		TicketEntity savedTicket = ticketRepository.save(ticket);
-		
-		savedTicket.setDetails(new HashSet<>(ticketDetails));
 		ticketDetails.forEach(detail -> detail.setTicket(savedTicket));;
-		
+		ticketDetailRepository.saveAll(ticketDetails);
+		savedTicket.setDetails(new HashSet<>(ticketDetails));
 		return savedTicket;
 	}
 	

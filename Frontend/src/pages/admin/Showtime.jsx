@@ -250,7 +250,7 @@ function Showtime() {
                 })
             )}
             {showModalCreate && (
-                <Modal className="w-2/3" onHideClick={(e) => setShowModalCreate(false)}>
+                <Modal className="md:w-2/3" onHideClick={(e) => setShowModalCreate(false)}>
                     <form onSubmit={handleFormCreateSubmit}>
                         <header className="flex items-center justify-between mb-3">
                             <h1 className="font-bold text-xl">Thêm</h1>

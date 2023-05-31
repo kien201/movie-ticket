@@ -17,7 +17,7 @@ function pad(value) {
 function convertToDate(date) {
     if (typeof date === 'string') return new Date(date)
     if (!(date instanceof Date)) return new Date()
-    return date
+    return new Date(date)
 }
 
 function add(date, duration, type) {

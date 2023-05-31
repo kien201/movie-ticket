@@ -38,20 +38,23 @@ function Carousel({ data, intervalDuration = 3000 }) {
                     className="absolute inset-0 transition-opacity aria-disabled:opacity-0 aria-disabled:pointer-events-none"
                     aria-disabled={activeIndex !== index}
                 >
-                    <Image className="w-full h-full object-cover" src={webAPI.getUpload(item.thumbnail)} />
+                    <Image
+                        className="w-full h-full object-cover brightness-90"
+                        src={webAPI.getUpload(item.thumbnail)}
+                    />
                 </a>
             ))}
-            <button className="absolute left-0 top-1/2 -translate-y-1/2 text-7xl opacity-70 hover:opacity-100">
+            <button className="absolute left-0 top-1/2 -translate-y-1/2 text-7xl opacity-80 hover:opacity-100">
                 <FiChevronLeft onClick={(e) => setActiveIndex((prev) => prev - 1)} />
             </button>
-            <button className="absolute right-0 top-1/2 -translate-y-1/2 text-7xl opacity-70 hover:opacity-100">
+            <button className="absolute right-0 top-1/2 -translate-y-1/2 text-7xl opacity-80 hover:opacity-100">
                 <FiChevronRight onClick={(e) => setActiveIndex((prev) => prev + 1)} />
             </button>
             <div className="absolute left-1/2 -translate-x-1/2 bottom-0 text-2xl">
                 {data.map((item, index) => (
                     <button
                         key={index}
-                        className="transition-opacity opacity-70 aria-[current='true']:opacity-100"
+                        className="transition-opacity opacity-80 aria-[current='true']:opacity-100"
                         aria-current={activeIndex === index}
                         onClick={(e) => setActiveIndex(index)}
                     >

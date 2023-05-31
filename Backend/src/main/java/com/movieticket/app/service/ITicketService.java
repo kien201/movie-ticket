@@ -14,7 +14,6 @@ public interface ITicketService {
 	List<TicketEntity> findByUserId(Long userId);
 	
 	TicketEntity findOne(Long id);
-	
 	TicketEntity create(TicketDTO ticketDTO);
 	
 	TicketEntity update(Long id, TicketDTO ticketDTO);

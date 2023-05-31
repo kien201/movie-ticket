@@ -161,13 +161,8 @@ function Ticket() {
     const renderCsvLink = () => (
         <CSVLink
             data={tickets.data.map((ticket) => ({
-                // fullname: ticket.user.fullname,
-                // email: ticket.user.email,
-                // phoneNumber: ticket.user.phoneNumber,
-                // createdDate: dateUtil.format(ticket.createdDate, dateUtil.DATETIME_FORMAT),
-                // cinemaName: ticket.showtime.room.cinema.name,
-                // movieName: ticket.showtime.movie.name,
                 ...ticket,
+                createdDate: dateUtil.format(ticket.createdDate, dateUtil.DATETIME_FORMAT),
                 status: Object.values(ticketStatus).find((status) => ticket.status === status.value).text,
                 details: ticket.details
                     .map(
@@ -177,7 +172,7 @@ function Ticket() {
                             )}`
                     )
                     .join(', '),
-                // totalPrice: currencyUtil.format(ticket.totalPrice),
+                totalPrice: currencyUtil.format(ticket.totalPrice),
             }))}
             headers={[
                 { key: 'user.fullname', label: 'Tên khách hàng' },
