@@ -28,7 +28,7 @@ public class ShowtimeEntity extends BaseEntity {
 	@ManyToOne
 	private RoomEntity room;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "showtime", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private Set<TicketEntity> tickets = new HashSet<>();
 }

@@ -38,6 +38,7 @@ function Movie() {
                     >
                         <option value="current">Đang chiếu</option>
                         <option value="coming-soon">Sắp chiếu</option>
+                        <option value="popular">Phổ biến</option>
                     </select>
                 </div>
             </div>
