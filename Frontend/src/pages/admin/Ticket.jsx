@@ -154,7 +154,11 @@ function Ticket() {
                     </span>
                 )
             default:
-                return <span className="text-xs rounded p-1 bg-gray-secondary">{ticketStatus.UNPAID.text}</span>
+                return (
+                    <span className="text-xs rounded p-1 bg-gray-secondary whitespace-nowrap">
+                        {ticketStatus.UNPAID.text}
+                    </span>
+                )
         }
     }
 

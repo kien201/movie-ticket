@@ -41,6 +41,7 @@ public class VnPayService implements IPaymentService {
 		String vnp_TxnRef = ticketId.toString();
 		vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
 		vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang: #" + vnp_TxnRef);
+		vnp_Params.put("vnp_OrderType", VnPayConfig.vnp_OrderType);
 		Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 		vnp_Params.put("vnp_CreateDate", formatter.format(cld.getTime()));

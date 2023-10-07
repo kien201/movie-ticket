@@ -21,6 +21,7 @@ public class VnPayConfig {
 	public static String vnp_Command = "pay";
 	public static String vnp_CurrCode = "VND";
 	public static String vnp_Locale = "vn";
+	public static String vnp_OrderType = "other";
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_Returnurl = "http://localhost:3000/profile/vnpay_return";
     public static String vnp_TmnCode = "";

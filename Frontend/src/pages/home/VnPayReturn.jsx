@@ -17,13 +17,14 @@ function VnPayReturn() {
                 const res = await webAPI.profile.vnpayReturn(params)
                 if (res.data.code === '00') {
                     toast.success(res.data.message)
-                    navigate('/profile/ticket', { replace: true })
                 } else {
                     toast.error(res.data.message)
                 }
             } catch (error) {
                 handleError(error)
             }
+
+            navigate('/profile/ticket', { replace: true })
         })()
     }, [searchParams])
 
