@@ -27,9 +27,9 @@ function add(date, duration, type) {
             return new Date(date + 86400000 * duration)
         case addType.HOURS:
             return new Date(date + 3600000 * duration)
-        case addType.SECONDS:
-            return new Date(date + 60000 * duration)
         case addType.MINUTES:
+            return new Date(date + 60000 * duration)
+        case addType.SECONDS:
             return new Date(date + 1000 * duration)
         default:
             return new Date(date + duration)
@@ -46,8 +46,8 @@ function getMonday(d) {
 const addType = Object.freeze({
     DAYS: 'DAYS',
     HOURS: 'HOURS',
-    SECONDS: 'SECONDS',
     MINUTES: 'MINUTES',
+    SECONDS: 'SECONDS',
 })
 
 const DATE_FORMAT = 'dd/MM/yyyy'

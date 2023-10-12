@@ -1,5 +1,6 @@
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useCallback, useEffect, useState } from 'react'
 import { AiFillDelete } from 'react-icons/ai'
+import { MdEventSeat } from 'react-icons/md'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { TiArrowSortedDown, TiArrowSortedUp } from 'react-icons/ti'
 import { IoTicket } from 'react-icons/io5'
@@ -33,40 +34,74 @@ function Ticket() {
     const [showModalUpdate, setShowModalUpdate] = useState(false)
     const [showModalDelete, setShowModalDelete] = useState(false)
 
+    const [cinemas, setCinemas] = useState([])
+    const [movies, setMovies] = useState([])
     const [tickets, setTickets] = useState({
         data: [],
         page: {},
     })
+    const [report, setReport] = useState({
+        ticketCount: 0,
+        revenue: 0,
+        bookedSeat: 0,
+        totalSeat: 0,
+    })
     const [query, setQuery] = useState({
         fromDate: dateUtil.format(dateUtil.add(Date.now(), -30, dateUtil.addType.DAYS), dateUtil.INPUT_DATE_FORMAT),
         toDate: dateUtil.format(new Date(), dateUtil.INPUT_DATE_FORMAT),
+        cinemaId: undefined,
+        movieId: undefined,
     })
 
     const [selectedId, setSelectedId] = useState([])
     const [dataRequest, setDataRequest] = useState(dataRequestInit)
 
-    const activeTickets = useMemo(() => tickets.data.filter((ticket) => ticket.active), [tickets])
-    const revenue = useMemo(
-        () => activeTickets.reduce((total, ticket) => total + ticket.totalPrice, 0),
-        [activeTickets]
-    )
-
     useEffect(() => {
-        async function loadTickets() {
+        async function loadCinemas() {
             try {
-                const res = await adminAPI.ticket.getAllWithPage(query)
-                setTickets(res.data)
+                const res = await adminAPI.cinema.getAll()
+                setCinemas(res.data)
             } catch (error) {
-                toast.error('Lỗi load danh sách')
+                toast.error('Lỗi load danh sách rạp')
+                console.log(error)
+            }
+        }
+
+        async function loadMovies() {
+            try {
+                const res = await adminAPI.movie.getAll()
+                setMovies(res.data)
+            } catch (error) {
+                toast.error('Lỗi load danh sách phim')
                 console.log(error)
             }
         }
 
         ;(async function () {
-            await loadTickets()
+            await Promise.all([loadCinemas(), loadMovies()])
+        })()
+    }, [])
+
+    const loadTickets = useCallback(async function (query) {
+        try {
+            const [resTicket, resReport] = await Promise.all([
+                adminAPI.ticket.getAllWithPage(query),
+                adminAPI.ticket.getReport(query),
+            ])
+            setTickets(resTicket.data)
+            setReport(resReport.data)
+        } catch (error) {
+            toast.error('Lỗi load danh sách')
+            console.log(error)
+        }
+    }, [])
+
+    useEffect(() => {
+        ;(async function () {
+            await loadTickets(query)
             setLoading(false)
         })()
-    }, [query])
+    }, [query, loadTickets])
 
     const handleFormInputChange = (e) => {
         const { name, value, type, checked } = e.target
@@ -79,12 +114,9 @@ function Ticket() {
     const handleFormUpdateSubmit = async (e) => {
         e.preventDefault()
         try {
-            const res = await adminAPI.ticket.update(dataRequest.id, dataRequest)
+            await adminAPI.ticket.update(dataRequest.id, dataRequest)
+            await loadTickets(query)
             toast.success('Cập nhật thành công')
-            setTickets((prev) => ({
-                ...prev,
-                data: prev.data.map((ticket) => (ticket.id === res.data.id ? res.data : ticket)),
-            }))
             setShowModalUpdate(false)
         } catch (error) {
             handleError(error)
@@ -94,11 +126,8 @@ function Ticket() {
     const handleDelete = async () => {
         try {
             await adminAPI.ticket.delete(selectedId)
+            await loadTickets(query)
             toast.success('Xoá thành công')
-            setTickets((prev) => ({
-                data: prev.data.filter((ticket) => !selectedId.includes(ticket.id)),
-                page: { ...prev.page, totalItems: prev.page.totalItems - selectedId.length },
-            }))
             setSelectedId([])
             setShowModalDelete(false)
         } catch (error) {
@@ -202,7 +231,7 @@ function Ticket() {
     ) : (
         <>
             <div className="mb-3 bg-white rounded shadow p-5">
-                <div className="mb-5 flex flex-wrap items-center gap-5">
+                <div className="mb-3 flex flex-wrap items-center gap-5">
                     <span>Từ ngày</span>
                     <input
                         className="max-md:w-full border rounded-md px-3 py-2 focus:outline outline-blue-primary"
@@ -232,25 +261,65 @@ function Ticket() {
                         }}
                     />
                 </div>
-                <div className="grid grid-cols-3 text-center gap-5 lg:gap-10">
+                <div className="mb-5 flex flex-wrap items-center gap-5">
+                    <span>Rạp</span>
+                    <select
+                        className="max-md:w-full text-ellipsis border rounded-md px-3 py-2 focus:outline outline-blue-primary"
+                        value={query.cinemaId}
+                        onChange={(e) =>
+                            setQuery((prev) => ({ ...prev, page: 1, cinemaId: e.target.value || undefined }))
+                        }
+                    >
+                        <option value="">--- Chọn rạp ---</option>
+                        {cinemas.map((cinema) => (
+                            <option key={cinema.id} value={cinema.id}>
+                                {cinema.name}
+                            </option>
+                        ))}
+                    </select>
+                    <span>Phim</span>
+                    <select
+                        className="max-md:w-full text-ellipsis border rounded-md px-3 py-2 focus:outline outline-blue-primary"
+                        value={query.movieId}
+                        onChange={(e) =>
+                            setQuery((prev) => ({ ...prev, page: 1, movieId: e.target.value || undefined }))
+                        }
+                    >
+                        <option value="">--- Chọn phim ---</option>
+                        {movies.map((movie) => (
+                            <option key={movie.id} value={movie.id}>
+                                {movie.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="grid grid-cols-4 text-center gap-5 lg:gap-10">
                     <div className="rounded-lg p-2 bg-green-primary text-white shadow drop-shadow">
                         <p className="inline-flex items-center gap-1 text-lg">
                             <RiMoneyEuroCircleLine /> <span>Doanh thu</span>
                         </p>
-                        <h1 className="text-2xl font-semibold">{currencyUtil.format(revenue)}</h1>
+                        <h1 className="text-2xl font-semibold">{currencyUtil.format(report.revenue || 0)}</h1>
                     </div>
                     <div className="rounded-lg p-2 bg-blue-primary text-white shadow drop-shadow">
                         <p className="inline-flex items-center gap-1 text-lg">
                             <IoTicket /> <span>Vé</span>
                         </p>
-                        <h1 className="text-2xl font-semibold">{activeTickets.length}</h1>
+                        <h1 className="text-2xl font-semibold">{report.ticketCount}</h1>
                     </div>
                     <div className="rounded-lg p-2 bg-gray-primary text-white shadow drop-shadow">
                         <p className="inline-flex items-center gap-1 text-lg">
                             <RiMoneyEuroCircleLine /> <span>Doanh thu / vé</span>
                         </p>
                         <h1 className="text-2xl font-semibold">
-                            {currencyUtil.format(revenue / activeTickets.length || 0)}
+                            {currencyUtil.format(report.revenue / report.ticketCount || 0)}
+                        </h1>
+                    </div>
+                    <div className="rounded-lg p-2 bg-gray-primary text-white shadow drop-shadow">
+                        <p className="inline-flex items-center gap-1 text-lg">
+                            <MdEventSeat /> <span>Ghế đã đặt / Tổng số</span>
+                        </p>
+                        <h1 className="text-2xl font-semibold">
+                            {report.bookedSeat || 0} / {report.totalSeat}
                         </h1>
                     </div>
                 </div>
@@ -394,7 +463,7 @@ function Ticket() {
                 <div className="flex justify-between mt-2">
                     <p>
                         Hiển thị <span className="text-blue-primary">{tickets.data.length}</span> / tổng số{' '}
-                        <span className="text-blue-primary">{tickets.page.totalItems}</span>
+                        <span className="text-blue-primary">{tickets.page.totalItems || 0}</span>
                     </p>
                     {tickets.page.totalPages > 1 && (
                         <Pagination

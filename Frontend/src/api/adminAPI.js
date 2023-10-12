@@ -165,6 +165,9 @@ const ticket = {
     getAllWithPage(params) {
         return privateAPI.get(`${this.url}/page`, { params })
     },
+    getReport(params) {
+        return privateAPI.get(`${this.url}/report`, { params })
+    },
     create(data) {
         return privateAPI.post(this.url, data)
     },

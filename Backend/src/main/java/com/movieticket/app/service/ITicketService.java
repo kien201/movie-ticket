@@ -4,13 +4,15 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.movieticket.app.dto.PageDTO;
-import com.movieticket.app.dto.QueryFilter;
+import com.movieticket.app.dto.ReportOutputDTO;
 import com.movieticket.app.dto.TicketDTO;
+import com.movieticket.app.dto.TicketFilter;
 import com.movieticket.app.entity.TicketEntity;
 
 public interface ITicketService {
 	List<TicketEntity> findAll(LocalDate fromDate, LocalDate toDate);
-	PageDTO<TicketEntity> findByFromDateAndToDate(LocalDate fromDate, LocalDate toDate, QueryFilter filter);
+	PageDTO<TicketEntity> findByFilter(TicketFilter filter);
+	ReportOutputDTO getReport(TicketFilter filter);
 	List<TicketEntity> findByUserId(Long userId);
 	
 	TicketEntity findOne(Long id);

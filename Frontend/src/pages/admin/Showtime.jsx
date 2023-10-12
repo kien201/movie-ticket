@@ -59,7 +59,6 @@ function Showtime() {
 
         ;(async function () {
             await Promise.all([loadCinemas(), loadMovies()])
-            setLoading(false)
         })()
     }, [])
 
@@ -85,6 +84,7 @@ function Showtime() {
 
         ;(async function () {
             await Promise.all([loadRooms(), loadShowtimes()])
+            setLoading(false)
         })()
     }, [filter])
 

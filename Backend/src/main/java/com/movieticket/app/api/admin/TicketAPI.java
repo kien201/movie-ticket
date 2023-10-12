@@ -20,8 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.movieticket.app.constants.RoleName;
 import com.movieticket.app.dto.PageDTO;
-import com.movieticket.app.dto.QueryFilter;
+import com.movieticket.app.dto.ReportOutputDTO;
 import com.movieticket.app.dto.TicketDTO;
+import com.movieticket.app.dto.TicketFilter;
 import com.movieticket.app.entity.TicketEntity;
 import com.movieticket.app.service.ITicketService;
 
@@ -36,8 +37,13 @@ public class TicketAPI {
 	}
 	
 	@GetMapping("/page")
-	PageDTO<TicketEntity> getAllByFromDateAndToDateWithPage(@DateTimeFormat(iso = ISO.DATE) LocalDate fromDate, @DateTimeFormat(iso = ISO.DATE) LocalDate toDate, QueryFilter filter) {
-		return ticketService.findByFromDateAndToDate(fromDate, toDate, filter);
+	PageDTO<TicketEntity> getAllWithPage(TicketFilter filter) {
+		return ticketService.findByFilter(filter);
+	}
+	
+	@GetMapping("/report")
+	ReportOutputDTO getReport(TicketFilter filter) {
+		return ticketService.getReport(filter);
 	}
 	
 	@GetMapping("{id}")
