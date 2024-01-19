@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.dto.ShowtimeDTO;
 import com.movieticket.app.entity.ShowtimeEntity;
 import com.movieticket.app.repository.MovieRepository;
@@ -28,6 +29,10 @@ public class ShowtimeService implements IShowtimeService {
 	
 	public List<ShowtimeEntity> findAll(){
 		return showtimeRepository.findAll(Sort.by(Direction.DESC, "startTime"));
+	}
+	
+	public List<ShowtimeEntity> findAllByFilter(QueryFilter filter) {
+		return showtimeRepository.findAllByFilter(filter);
 	}
 	
 	public List<ShowtimeEntity> findByMovieIdAndStartTime(Long movieId, LocalDate startTime){

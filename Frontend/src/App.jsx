@@ -20,6 +20,7 @@ import {
     ShowtimeManage,
     VnPayReturn,
     TicketManage,
+    ReportManage,
     Cinema,
     Profile,
     Ticket,
@@ -108,6 +109,7 @@ const router = createBrowserRouter([
                     </CheckAuth>
                 ),
             },
+            { path: 'report', element: <ReportManage /> },
             { path: '*', element: <Navigate to="/admin" replace /> },
         ],
     },

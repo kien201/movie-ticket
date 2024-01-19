@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.movieticket.app.entity.ShowtimeEntity;
 
-public interface ShowtimeRepository extends BaseRepository<ShowtimeEntity, Long> {
+public interface ShowtimeRepository extends BaseRepository<ShowtimeEntity, Long>, ShowtimeRepositoryCustom {
 	@Query("select e from #{#entityName} e where e.movie.id = :movieId and cast(e.startTime as LocalDate) = :startTime")
 	List<ShowtimeEntity> findByMovieIdAndStartTime(Long movieId, LocalDate startTime, Sort sort);
 

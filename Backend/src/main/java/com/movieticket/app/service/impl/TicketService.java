@@ -1,6 +1,5 @@
 package com.movieticket.app.service.impl;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -15,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.movieticket.app.constants.Common;
 import com.movieticket.app.dto.PageDTO;
+import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.dto.ReportOutputDTO;
 import com.movieticket.app.dto.TicketDTO;
-import com.movieticket.app.dto.TicketFilter;
 import com.movieticket.app.entity.FoodEntity;
 import com.movieticket.app.entity.SeatEntity;
 import com.movieticket.app.entity.ShowtimeEntity;
@@ -41,16 +40,16 @@ public class TicketService implements ITicketService {
 	@Autowired SeatRepository seatRepository;
 	@Autowired FoodRepository foodRepository;
 	
-	public List<TicketEntity> findAll(LocalDate fromDate, LocalDate toDate){
-		return ticketRepository.findByFromDateAndToDateAndActiveTrue(fromDate, toDate);
+	public List<TicketEntity> findAllByFilter(QueryFilter filter) {
+		return ticketRepository.findAllByFilter(filter);
 	}
 
-	public PageDTO<TicketEntity> findByFilter(TicketFilter filter) {
+	public PageDTO<TicketEntity> findByFilter(QueryFilter filter) {
 		Page<TicketEntity> page = ticketRepository.findByFilter(filter);
 		return PageDTO.from(page);
 	}
 	
-	public ReportOutputDTO getReport(TicketFilter filter) {
+	public ReportOutputDTO getReport(QueryFilter filter) {
 		return ticketRepository.getReport(filter);
 	}
 	

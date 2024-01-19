@@ -19,12 +19,13 @@ import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.entity.FoodEntity;
 import com.movieticket.app.repository.FoodRepository;
 import com.movieticket.app.service.IFoodService;
-import com.movieticket.app.utils.UploadUtil;
+import com.movieticket.app.storage.StorageService;
 
 @Service
 @Transactional
 public class FoodService implements IFoodService {
 	@Autowired FoodRepository foodRepository;
+	@Autowired StorageService storageService;
 	
 	public List<FoodEntity> findAll(){
 		return foodRepository.findAll(Sort.by(Direction.DESC, "id"));
@@ -47,7 +48,7 @@ public class FoodService implements IFoodService {
 		FoodEntity food = new FoodEntity();
 		BeanUtils.copyProperties(foodInfo, food);
 		if (foodInfo.getThumbnailFile() != null && !foodInfo.getThumbnailFile().isEmpty()) {
-			String filename = UploadUtil.store(foodInfo.getThumbnailFile(), Common.UPLOAD_DIR);
+			String filename = storageService.store(foodInfo.getThumbnailFile());
 			food.setThumbnail(filename);
 		} else food.setThumbnail(Common.DEFAULT_IMAGE_NAME);
 		return foodRepository.save(food);
@@ -57,7 +58,7 @@ public class FoodService implements IFoodService {
 		FoodEntity food = findOne(id);
 		BeanUtils.copyProperties(foodInfo, food);
 		if (foodInfo.getThumbnailFile() != null && !foodInfo.getThumbnailFile().isEmpty()) {
-			String filename = UploadUtil.store(foodInfo.getThumbnailFile(), Common.UPLOAD_DIR);
+			String filename = storageService.store(foodInfo.getThumbnailFile());
 			food.setThumbnail(filename);
 		}
 		if (food.getThumbnail() == null) food.setThumbnail(Common.DEFAULT_IMAGE_NAME);

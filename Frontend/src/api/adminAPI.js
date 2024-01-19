@@ -146,6 +146,9 @@ const showtime = {
     getAll(params) {
         return privateAPI.get(this.url, { params })
     },
+    getAllWithFilter(params) {
+        return privateAPI.get(`${this.url}/filter`, { params })
+    },
     createMany(data) {
         return privateAPI.post(this.url, data)
     },

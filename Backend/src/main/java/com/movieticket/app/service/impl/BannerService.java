@@ -16,12 +16,13 @@ import com.movieticket.app.dto.BannerDTO;
 import com.movieticket.app.entity.BannerEntity;
 import com.movieticket.app.repository.BannerRepository;
 import com.movieticket.app.service.IBannerService;
-import com.movieticket.app.utils.UploadUtil;
+import com.movieticket.app.storage.StorageService;
 
 @Service
 @Transactional
 public class BannerService implements IBannerService {
 	@Autowired BannerRepository bannerRepository;
+	@Autowired StorageService storageService;
 	
 	public List<BannerEntity> findAll(){
 		return bannerRepository.findAll(Sort.by(Direction.ASC, "id"));
@@ -39,7 +40,7 @@ public class BannerService implements IBannerService {
 		BannerEntity banner = new BannerEntity();
 		BeanUtils.copyProperties(bannerDTO, banner);
 		if (bannerDTO.getThumbnailFile() != null && !bannerDTO.getThumbnailFile().isEmpty()) {
-			String filename = UploadUtil.store(bannerDTO.getThumbnailFile(), Common.UPLOAD_DIR);
+			String filename = storageService.store(bannerDTO.getThumbnailFile());
 			banner.setThumbnail(filename);
 		} else banner.setThumbnail(Common.DEFAULT_IMAGE_NAME);
 		return bannerRepository.save(banner);
@@ -49,7 +50,7 @@ public class BannerService implements IBannerService {
 		BannerEntity banner = findOne(id);
 		BeanUtils.copyProperties(bannerDTO, banner);
 		if (bannerDTO.getThumbnailFile() != null && !bannerDTO.getThumbnailFile().isEmpty()) {
-			String filename = UploadUtil.store(bannerDTO.getThumbnailFile(), Common.UPLOAD_DIR);
+			String filename = storageService.store(bannerDTO.getThumbnailFile());
 			banner.setThumbnail(filename);
 		}
 		if (banner.getThumbnail() == null) banner.setThumbnail(Common.DEFAULT_IMAGE_NAME);

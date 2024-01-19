@@ -84,8 +84,8 @@ public class ProfileAPI {
 	}
 	
 	@GetMapping("vnpay_return")
-	Map<String, String> paymentSuccess(HttpServletRequest req) throws UnsupportedEncodingException {
-		return paymentService.paymentSuccess(req);
+	Map<String, Object> VnpayReturn(HttpServletRequest req) {
+		return paymentService.paymentReturn(req);
 	}
 	
 }

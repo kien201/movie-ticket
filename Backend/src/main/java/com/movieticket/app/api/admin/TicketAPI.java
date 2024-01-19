@@ -1,11 +1,8 @@
 package com.movieticket.app.api.admin;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,9 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.movieticket.app.constants.RoleName;
 import com.movieticket.app.dto.PageDTO;
+import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.dto.ReportOutputDTO;
 import com.movieticket.app.dto.TicketDTO;
-import com.movieticket.app.dto.TicketFilter;
 import com.movieticket.app.entity.TicketEntity;
 import com.movieticket.app.service.ITicketService;
 
@@ -32,17 +29,17 @@ public class TicketAPI {
 	@Autowired ITicketService ticketService;
 	
 	@GetMapping
-	List<TicketEntity> getAll(@DateTimeFormat(iso = ISO.DATE) LocalDate fromDate, @DateTimeFormat(iso = ISO.DATE) LocalDate toDate) {
-		return ticketService.findAll(fromDate, toDate);
+	List<TicketEntity> getAll(QueryFilter filter) {
+		return ticketService.findAllByFilter(filter);
 	}
 	
 	@GetMapping("/page")
-	PageDTO<TicketEntity> getAllWithPage(TicketFilter filter) {
+	PageDTO<TicketEntity> getAllWithPage(QueryFilter filter) {
 		return ticketService.findByFilter(filter);
 	}
 	
 	@GetMapping("/report")
-	ReportOutputDTO getReport(TicketFilter filter) {
+	ReportOutputDTO getReport(QueryFilter filter) {
 		return ticketService.getReport(filter);
 	}
 	

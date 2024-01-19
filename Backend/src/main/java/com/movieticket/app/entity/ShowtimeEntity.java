@@ -10,7 +10,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Formula;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.movieticket.app.constants.TicketStatus;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -31,4 +34,13 @@ public class ShowtimeEntity extends BaseEntity {
 	@OneToMany(mappedBy = "showtime", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private Set<TicketEntity> tickets = new HashSet<>();
+
+	@Formula("(select count(s.id) from seat s where s.room_id = room_id and s.active = true)")
+	private int totalSeatCount;
+
+	@Formula("(select count(s.id) from seat s "
+			+ "join ticketdetail d on d.seat_id = s.id "
+			+ "join ticket t on d.ticket_id = t.id "
+			+ "where t.status = "+TicketStatus.PAYMENT_SUCCESS+" and t.showtime_id = id)")
+	private int occupiedSeatCount;
 }

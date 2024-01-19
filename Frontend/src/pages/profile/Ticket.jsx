@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 
 import webAPI from '../../api/webAPI'
@@ -8,18 +9,40 @@ import { ticketStatus } from '../../constants/ticketStatus'
 import Dropdown from '../../components/Dropdown'
 import Modal from '../../components/Modal'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { handleError } from '../../api/axiosConfig'
 
 function Ticket() {
+    const [searchParams] = useSearchParams()
     const [showModalInfo, setShowModalInfo] = useState(false)
     const [tickets, setTickets] = useState([])
     const [selectedTicket, setSelectedTicket] = useState({})
 
     useEffect(() => {
         ;(async () => {
-            const res = await webAPI.profile.getCurrentUserTicket()
-            setTickets(res.data)
+            try {
+                const res = await webAPI.profile.getCurrentUserTicket()
+
+                if (searchParams.has('vnp_SecureHash')) {
+                    const params = Object.fromEntries(searchParams.entries())
+                    const vnpayReturnData = (await webAPI.profile.vnpayReturn(params)).data
+                    if (vnpayReturnData.ticket && res.data.every((ticket) => ticket.id !== vnpayReturnData.ticket.id)) {
+                        res.data.unshift({ ...vnpayReturnData.ticket, status: vnpayReturnData.status })
+                    }
+
+                    if (vnpayReturnData.status === ticketStatus.PAYMENT_SUCCESS.value) {
+                        toast.success(vnpayReturnData.message)
+                    } else {
+                        toast.error(vnpayReturnData.message)
+                    }
+                }
+
+                setTickets(res.data)
+            } catch (error) {
+                handleError(error)
+            }
         })()
-    }, [])
+    }, [searchParams])
 
     const renderTicketStatus = (status) => {
         switch (status) {
@@ -112,7 +135,7 @@ function Ticket() {
                                 dateUtil.add(
                                     selectedTicket.showtime.startTime,
                                     selectedTicket.showtime.movie.duration,
-                                    dateUtil.addType.MINUTES
+                                    dateUtil.dateType.MINUTES
                                 ),
                                 dateUtil.DATETIME_FORMAT
                             )}

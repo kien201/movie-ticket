@@ -5,6 +5,7 @@ import { BiCameraMovie } from 'react-icons/bi'
 import { MdFastfood } from 'react-icons/md'
 import { IoTicket } from 'react-icons/io5'
 import { BsCardImage } from 'react-icons/bs'
+import { HiChartBar } from 'react-icons/hi2'
 
 import SidebarLink from './SidebarLink'
 import SidebarDropdown from './SidebarDropdown'
@@ -45,6 +46,9 @@ function Sidebar({ className }) {
             </SidebarLink>
             <SidebarLink to="/admin/user" icon={<FaUserEdit />}>
                 Người dùng
+            </SidebarLink>
+            <SidebarLink to="/admin/report" icon={<HiChartBar />}>
+                Báo cáo / thống kê
             </SidebarLink>
         </div>
     )

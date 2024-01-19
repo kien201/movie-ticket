@@ -19,12 +19,13 @@ import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.entity.MovieEntity;
 import com.movieticket.app.repository.MovieRepository;
 import com.movieticket.app.service.IMovieService;
-import com.movieticket.app.utils.UploadUtil;
+import com.movieticket.app.storage.StorageService;
 
 @Service
 @Transactional
 public class MovieService implements IMovieService {
 	@Autowired MovieRepository movieRepository;
+	@Autowired StorageService storageService;
 	
 	public List<MovieEntity> findAll(){
 		return movieRepository.findAll(Sort.by(Direction.DESC, "id"));
@@ -52,7 +53,7 @@ public class MovieService implements IMovieService {
 		MovieEntity movie = new MovieEntity();
 		BeanUtils.copyProperties(movieInfo, movie);
 		if (movieInfo.getThumbnailFile() != null && !movieInfo.getThumbnailFile().isEmpty()) {
-			String filename = UploadUtil.store(movieInfo.getThumbnailFile(), Common.UPLOAD_DIR);
+			String filename = storageService.store(movieInfo.getThumbnailFile());
 			movie.setThumbnail(filename);
 		} else movie.setThumbnail(Common.DEFAULT_IMAGE_NAME);
 		return movieRepository.save(movie);
@@ -62,7 +63,7 @@ public class MovieService implements IMovieService {
 		MovieEntity movie = findOne(id);
 		BeanUtils.copyProperties(movieInfo, movie);
 		if (movieInfo.getThumbnailFile() != null && !movieInfo.getThumbnailFile().isEmpty()) {
-			String filename = UploadUtil.store(movieInfo.getThumbnailFile(), Common.UPLOAD_DIR);
+			String filename = storageService.store(movieInfo.getThumbnailFile());
 			movie.setThumbnail(filename);
 		}
 		if (movie.getThumbnail() == null) movie.setThumbnail(Common.DEFAULT_IMAGE_NAME);

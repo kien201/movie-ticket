@@ -20,8 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.query.QueryUtils;
 
 import com.movieticket.app.constants.TicketStatus;
+import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.dto.ReportOutputDTO;
-import com.movieticket.app.dto.TicketFilter;
 import com.movieticket.app.entity.ShowtimeEntity;
 import com.movieticket.app.entity.TicketDetailEntity;
 import com.movieticket.app.entity.TicketEntity;
@@ -32,7 +32,7 @@ public class TicketRepositoryImpl implements TicketRepositoryCustom {
 	@Autowired
 	EntityManager em;
 
-	public Page<TicketEntity> findByFilter(TicketFilter filter) {
+	public Page<TicketEntity> findByFilter(QueryFilter filter) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TicketEntity> query = cb.createQuery(TicketEntity.class);
 		Root<TicketEntity> root = query.from(TicketEntity.class);
@@ -53,8 +53,29 @@ public class TicketRepositoryImpl implements TicketRepositoryCustom {
 		
 		return new PageImpl<>(content, pageable, total);
 	}
+
+	public List<TicketEntity> findAllByFilter(QueryFilter filter) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<TicketEntity> query = cb.createQuery(TicketEntity.class);
+		Root<TicketEntity> root = query.from(TicketEntity.class);
+		
+		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(cb.equal(root.get("status"), TicketStatus.PAYMENT_SUCCESS));
+		predicates.add(cb.greaterThanOrEqualTo(root.get("createdDate").as(LocalDate.class), filter.getFromDate()));
+		predicates.add(cb.lessThanOrEqualTo(root.get("createdDate").as(LocalDate.class), filter.getToDate()));
+		
+		if (filter.getCinemaId() != null) {
+			predicates.add(cb.equal(root.get("showtime").get("room").get("cinema"), filter.getCinemaId()));
+		}
+		if (filter.getMovieId() != null) {
+			predicates.add(cb.equal(root.get("showtime").get("movie"), filter.getMovieId()));
+		}
+		query.where(predicates.toArray(new Predicate[0]));
+		
+		return em.createQuery(query).getResultList();
+	}
 	
-	public ReportOutputDTO getReport(TicketFilter filter) {
+	public ReportOutputDTO getReport(QueryFilter filter) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Tuple> query = cb.createTupleQuery();
 		Root<TicketEntity> root = query.from(TicketEntity.class);
@@ -81,7 +102,7 @@ public class TicketRepositoryImpl implements TicketRepositoryCustom {
 		Root<TicketEntity> ticketRoot = queryShowtime.from(TicketEntity.class);
 		
 		List<Predicate> totalSeatPredicates = getPredicatesByFilter(cb, ticketRoot, filter);
-		predicates.add(cb.equal(ticketRoot.get("status"), TicketStatus.PAYMENT_SUCCESS));
+		totalSeatPredicates.add(cb.equal(ticketRoot.get("status"), TicketStatus.PAYMENT_SUCCESS));
 		
 		queryShowtime.select(ticketRoot.get("showtime"))
 					 .where(totalSeatPredicates.toArray(new Predicate[0]))
@@ -98,7 +119,7 @@ public class TicketRepositoryImpl implements TicketRepositoryCustom {
 		return reportResult;
 	}
 
-	private List<Predicate> getPredicatesByFilter(CriteriaBuilder cb, Root<TicketEntity> root, TicketFilter filter) {
+	private List<Predicate> getPredicatesByFilter(CriteriaBuilder cb, Root<TicketEntity> root, QueryFilter filter) {
 		List<Predicate> predicates = new ArrayList<>();
 		
 		if (filter.getCinemaId() != null) {

@@ -10,6 +10,7 @@ import { handleError } from '../../../api/axiosConfig'
 
 function BookTicketModal({ showtime, setShowModal }) {
     const [loading, setLoading] = useState(true)
+    const [apiLoading, setApiLoading] = useState(false)
     const [seats, setSeats] = useState([])
     const [foods, setFoods] = useState([])
 
@@ -86,8 +87,12 @@ function BookTicketModal({ showtime, setShowModal }) {
 
     const handleButtonBookTicketClick = async (e) => {
         try {
+            setApiLoading(true)
             const res = await webAPI.profile.bookTicket(ticket)
-            window.location.href = res.data
+            setTimeout(() => {
+                window.location.href = res.data
+                setApiLoading(false)
+            }, 1000)
         } catch (error) {
             handleError(error)
         }
@@ -102,7 +107,7 @@ function BookTicketModal({ showtime, setShowModal }) {
                     {showtime.room.cinema.name} | {showtime.room.name} |{' '}
                     {dateUtil.format(showtime.startTime, dateUtil.DATETIME_FORMAT)} -{' '}
                     {dateUtil.format(
-                        dateUtil.add(showtime.startTime, showtime.movie.duration, dateUtil.addType.MINUTES),
+                        dateUtil.add(showtime.startTime, showtime.movie.duration, dateUtil.dateType.MINUTES),
                         dateUtil.DATETIME_FORMAT
                     )}
                 </h1>
@@ -231,7 +236,7 @@ function BookTicketModal({ showtime, setShowModal }) {
                             <button
                                 className="w-full px-5 py-2 rounded-md bg-blue-primary text-white hover:bg-opacity-80 disabled:bg-gray-primary outline-none"
                                 onClick={handleButtonBookTicketClick}
-                                disabled={ticketDetails.seat.length === 0 || loading}
+                                disabled={ticketDetails.seat.length === 0 || apiLoading}
                             >
                                 Đặt vé
                             </button>

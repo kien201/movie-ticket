@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.movieticket.app.constants.RoleName;
+import com.movieticket.app.dto.QueryFilter;
 import com.movieticket.app.dto.ShowtimeDTO;
 import com.movieticket.app.entity.ShowtimeEntity;
 import com.movieticket.app.service.IShowtimeService;
@@ -31,6 +32,11 @@ public class ShowtimeAPI {
 	@GetMapping
 	List<ShowtimeEntity> getAll(Long cinemaId, @DateTimeFormat(iso = ISO.DATE) LocalDate startTime) {
 		return showtimeService.findByCinemaIdAndStartTime(cinemaId, startTime);
+	}
+	
+	@GetMapping("/filter")
+	List<ShowtimeEntity> getAllByFilter(QueryFilter filter) {
+		return showtimeService.findAllByFilter(filter);
 	}
 	
 	@GetMapping("{id}")

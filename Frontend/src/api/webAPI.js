@@ -79,7 +79,7 @@ function getStatic(url) {
 }
 
 function getUpload(url) {
-    return process.env.REACT_APP_API_URL + '/static/upload/' + url
+    return process.env.REACT_APP_API_URL + '/upload/' + url
 }
 
 const webAPI = { getUpload, getStatic, profile, movie, cinema, seat, food, banner }

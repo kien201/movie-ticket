@@ -23,7 +23,7 @@ function MovieDetail() {
     const [cinemasWithShowtime, setCinemasWithShowtime] = useState([])
 
     const datePickers = useMemo(
-        () => Array.from({ length: 30 }, (value, index) => dateUtil.add(Date.now(), index, dateUtil.addType.DAYS)),
+        () => Array.from({ length: 30 }, (value, index) => dateUtil.add(Date.now(), index, dateUtil.dateType.DAYS)),
         []
     )
     const [selectedDate, setSelectedDate] = useState(datePickers[0])

@@ -16,19 +16,27 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
-public class VnPayConfig {
-	public static String vnp_Version = "2.1.0";
-	public static String vnp_Command = "pay";
-	public static String vnp_CurrCode = "VND";
-	public static String vnp_Locale = "vn";
-	public static String vnp_OrderType = "other";
-    public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_Returnurl = "http://localhost:3000/profile/vnpay_return";
-    public static String vnp_TmnCode = "";
-    public static String vnp_HashSecret = "";
-    public static String vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-    public static String md5(String message) {
+@Component
+public class VnPayConfig {
+	public String vnp_Version = "2.1.0";
+	public String vnp_Command = "pay";
+	public String vnp_CurrCode = "VND";
+	public String vnp_Locale = "vn";
+	public String vnp_OrderType = "other";
+    public String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+    public String vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
+    
+    @Value("${custom.vnpay.returnurl}")
+    public String vnp_Returnurl;
+    @Value("${custom.vnpay.tmncode}")
+    public String vnp_TmnCode;
+    @Value("${custom.vnpay.hashsecret}")
+    public String vnp_HashSecret;
+
+    public String md5(String message) {
         String digest = null;
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -44,7 +52,7 @@ public class VnPayConfig {
         return digest;
     }
 
-    public static String Sha256(String message) {
+    public String Sha256(String message) {
         String digest = null;
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -60,7 +68,7 @@ public class VnPayConfig {
         return digest;
     }
     
-    public static String getQueryUrl(Map<String, String> fields) throws UnsupportedEncodingException {
+    public String getQueryUrl(Map<String, String> fields) throws UnsupportedEncodingException {
     	List<String> fieldNames = new ArrayList<>(fields.keySet());
         Collections.sort(fieldNames);
         StringBuilder sb = new StringBuilder();
@@ -78,11 +86,11 @@ public class VnPayConfig {
         return sb.toString();
     }
 
-    public static String hashAllFields(Map<String, String> fields) throws UnsupportedEncodingException {
+    public String hashAllFields(Map<String, String> fields) throws UnsupportedEncodingException {
         return hmacSHA512(vnp_HashSecret, getQueryUrl(fields));
     }
     
-    public static String hmacSHA512(final String key, final String data) {
+    public String hmacSHA512(final String key, final String data) {
         try {
 
             if (key == null || data == null) {
@@ -105,7 +113,7 @@ public class VnPayConfig {
         }
     }
 
-    public static String getIpAddress(HttpServletRequest request) {
+    public String getIpAddress(HttpServletRequest request) {
         String ipAdress;
         try {
             ipAdress = request.getHeader("X-FORWARDED-FOR");
@@ -118,7 +126,7 @@ public class VnPayConfig {
         return ipAdress;
     }
 
-    public static String getRandomNumber(int len) {
+    public String getRandomNumber(int len) {
         Random rnd = new Random();
         String chars = "0123456789";
         StringBuilder sb = new StringBuilder(len);

@@ -1,10 +1,7 @@
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import { AiFillDelete } from 'react-icons/ai'
-import { MdEventSeat } from 'react-icons/md'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { TiArrowSortedDown, TiArrowSortedUp } from 'react-icons/ti'
-import { IoTicket } from 'react-icons/io5'
-import { RiMoneyEuroCircleLine } from 'react-icons/ri'
 import { TbFileExport } from 'react-icons/tb'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -40,14 +37,8 @@ function Ticket() {
         data: [],
         page: {},
     })
-    const [report, setReport] = useState({
-        ticketCount: 0,
-        revenue: 0,
-        bookedSeat: 0,
-        totalSeat: 0,
-    })
     const [query, setQuery] = useState({
-        fromDate: dateUtil.format(dateUtil.add(Date.now(), -30, dateUtil.addType.DAYS), dateUtil.INPUT_DATE_FORMAT),
+        fromDate: dateUtil.format(dateUtil.add(Date.now(), -30, dateUtil.dateType.DAYS), dateUtil.INPUT_DATE_FORMAT),
         toDate: dateUtil.format(new Date(), dateUtil.INPUT_DATE_FORMAT),
         cinemaId: undefined,
         movieId: undefined,
@@ -84,12 +75,8 @@ function Ticket() {
 
     const loadTickets = useCallback(async function (query) {
         try {
-            const [resTicket, resReport] = await Promise.all([
-                adminAPI.ticket.getAllWithPage(query),
-                adminAPI.ticket.getReport(query),
-            ])
-            setTickets(resTicket.data)
-            setReport(resReport.data)
+            const res = await adminAPI.ticket.getAllWithPage(query)
+            setTickets(res.data)
         } catch (error) {
             toast.error('Lỗi load danh sách')
             console.log(error)
@@ -261,7 +248,7 @@ function Ticket() {
                         }}
                     />
                 </div>
-                <div className="mb-5 flex flex-wrap items-center gap-5">
+                <div className="flex flex-wrap items-center gap-5">
                     <span>Rạp</span>
                     <select
                         className="max-md:w-full text-ellipsis border rounded-md px-3 py-2 focus:outline outline-blue-primary"
@@ -292,36 +279,6 @@ function Ticket() {
                             </option>
                         ))}
                     </select>
-                </div>
-                <div className="grid grid-cols-4 text-center gap-5 lg:gap-10">
-                    <div className="rounded-lg p-2 bg-green-primary text-white shadow drop-shadow">
-                        <p className="inline-flex items-center gap-1 text-lg">
-                            <RiMoneyEuroCircleLine /> <span>Doanh thu</span>
-                        </p>
-                        <h1 className="text-2xl font-semibold">{currencyUtil.format(report.revenue || 0)}</h1>
-                    </div>
-                    <div className="rounded-lg p-2 bg-blue-primary text-white shadow drop-shadow">
-                        <p className="inline-flex items-center gap-1 text-lg">
-                            <IoTicket /> <span>Vé</span>
-                        </p>
-                        <h1 className="text-2xl font-semibold">{report.ticketCount}</h1>
-                    </div>
-                    <div className="rounded-lg p-2 bg-gray-primary text-white shadow drop-shadow">
-                        <p className="inline-flex items-center gap-1 text-lg">
-                            <RiMoneyEuroCircleLine /> <span>Doanh thu / vé</span>
-                        </p>
-                        <h1 className="text-2xl font-semibold">
-                            {currencyUtil.format(report.revenue / report.ticketCount || 0)}
-                        </h1>
-                    </div>
-                    <div className="rounded-lg p-2 bg-gray-primary text-white shadow drop-shadow">
-                        <p className="inline-flex items-center gap-1 text-lg">
-                            <MdEventSeat /> <span>Ghế đã đặt / Tổng số</span>
-                        </p>
-                        <h1 className="text-2xl font-semibold">
-                            {report.bookedSeat || 0} / {report.totalSeat}
-                        </h1>
-                    </div>
                 </div>
             </div>
             <h1 className="mb-3 text-lg font-semibold">Danh Sách</h1>
@@ -499,7 +456,7 @@ function Ticket() {
                                 dateUtil.add(
                                     dataRequest.showtime.startTime,
                                     dataRequest.showtime.movie.duration,
-                                    dateUtil.addType.MINUTES
+                                    dateUtil.dateType.MINUTES
                                 ),
                                 dateUtil.DATETIME_FORMAT
                             )}
